@@ -30,8 +30,9 @@ class _MainMenuViewState extends State<MainMenuView> {
       body:ListView(
         children: [ 
           const Text("Hello Greta,", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32), textAlign: TextAlign.center),
-          Text("here's what your impact for $month looks like", textAlign: TextAlign.center),
-          const DataBox()
+          Text("here's what your impact for $month looks like", textAlign: TextAlign.center, style: const TextStyle(fontSize: 20)),
+          DataBox(DataBoxType.Comparison),
+          DataBox(DataBoxType.Graph)
         ],
       )
     );
