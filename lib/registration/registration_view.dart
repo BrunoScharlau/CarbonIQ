@@ -11,6 +11,8 @@ class RegistrationView extends StatefulWidget {
 }
 
 class _RegistrationViewState extends State<RegistrationView> {
+  String username = "no-username-entered";
+
   @override
   void initState() {
     super.initState();
@@ -46,15 +48,18 @@ class _RegistrationViewState extends State<RegistrationView> {
                           MaterialPageRoute(
                               builder: (context) => QuizView(
                                     [
-                                      QuizQuestion("What's your name?",
-                                          const TextAnswerInputWidget())
+                                      QuizQuestion(
+                                          "What's your name?",
+                                          'username',
+                                          TextAnswerInputWidget(
+                                              ValueNotifier(username)))
                                     ],
-                                    (answers) {
+                                    () {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                MainMenuView(answers[0])),
+                                                MainMenuView(username)),
                                         (r) => false, // Clear everything
                                       );
                                     },
