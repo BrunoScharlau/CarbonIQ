@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 
 class DataBox extends StatelessWidget {
-  late DataBoxType type;
+  final DataBoxType type;
 
-  DataBox(DataBoxType type, {super.key}) {
-    this.type = type;
-  }
+  const DataBox(this.type, {super.key});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
       height: 100,
       width: double.infinity,
       decoration: BoxDecoration(
@@ -26,6 +24,6 @@ class DataBox extends StatelessWidget {
 }
 
 enum DataBoxType {
-  Graph,
-  Comparison,
+  graph,
+  comparison,
 }
