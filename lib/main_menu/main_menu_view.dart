@@ -43,8 +43,8 @@ class _MainMenuViewState extends State<MainMenuView> {
             Text("here's what your impact for $month looks like",
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 20)),
-            DataBox(DataBoxType.Comparison),
-            DataBox(DataBoxType.Graph)
+            const DataBox(DataBoxType.comparison),
+            const DataBox(DataBoxType.graph)
           ],
         ));
   }
