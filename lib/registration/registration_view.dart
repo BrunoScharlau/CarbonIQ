@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gretapp/quiz/quiz_view.dart';
-import 'package:gretapp/quiz/quiz_widgets.dart';
+import 'package:gretapp/main_menu/main_menu_view.dart';
+import 'package:gretapp/survey/survey_view.dart';
+import 'package:gretapp/survey/survey_widgets.dart';
 
 class RegistrationView extends StatefulWidget {
   const RegistrationView({super.key});
@@ -49,7 +50,13 @@ class _RegistrationViewState extends State<RegistrationView> {
                                           const TextAnswerInputWidget())
                                     ],
                                     (answers) {
-                                      // TODO handle answers
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                MainMenuView(answers[0])),
+                                        (r) => false, // Clear everything
+                                      );
                                     },
                                   )),
                         );

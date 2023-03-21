@@ -1,10 +1,9 @@
-
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 
 class DataBox extends StatelessWidget {
   late DataBoxType type;
 
-  DataBox( DataBoxType type, {super.key}){
+  DataBox(DataBoxType type, {super.key}) {
     this.type = type;
   }
 
@@ -16,10 +15,12 @@ class DataBox extends StatelessWidget {
       height: 100,
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-        color: Colors.blueGrey[300]
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          color: Colors.blueGrey[300]),
+      child: Text(
+        "This is Data $type Box\nLorem ipsum foo bar",
+        textAlign: TextAlign.center,
       ),
-      child: Text("This is Data $type Box\nJustin Trudeau hates children.", textAlign: TextAlign.center,),
     );
   }
 }
