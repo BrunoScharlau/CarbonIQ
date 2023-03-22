@@ -1,34 +1,22 @@
 import 'package:flutter/material.dart';
 
 /// This widget is only the input part. It doesn't include the prompt, the background, the progress bar etc
-abstract class AnswerInputWidget<T> extends StatefulWidget {
+abstract class AnswerInputWidget<T> extends StatelessWidget {
   const AnswerInputWidget({super.key});
 }
 
 class TextAnswerInputWidget extends AnswerInputWidget<String> {
   final ValueNotifier valueNotifier;
-
-  const TextAnswerInputWidget(this.valueNotifier, {super.key});
-
-  @override
-  State<StatefulWidget> createState() => _TextAnswerInputWidgetState();
-}
-
-class _TextAnswerInputWidgetState extends State<TextAnswerInputWidget> {
   final TextEditingController editingController = TextEditingController();
 
-  @override
-  void initState() {
+  TextAnswerInputWidget(this.valueNotifier, {super.key}) {
     editingController.addListener(() {
-      widget.valueNotifier.value = editingController.text;
+      valueNotifier.value = editingController.text;
     });
-    super.initState();
   }
 
-  @override
-  void dispose() {
+  destructor() {
     editingController.dispose();
-    super.dispose();
   }
 
   @override

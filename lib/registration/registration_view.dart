@@ -3,20 +3,10 @@ import 'package:gretapp/main_menu/main_menu_view.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
-class RegistrationView extends StatefulWidget {
-  const RegistrationView({super.key});
-
-  @override
-  State<RegistrationView> createState() => _RegistrationViewState();
-}
-
-class _RegistrationViewState extends State<RegistrationView> {
+class RegistrationView extends StatelessWidget {
   final ValueNotifier<String> usernameNotifier = ValueNotifier<String>('');
 
-  @override
-  void initState() {
-    super.initState();
-  }
+  RegistrationView({super.key});
 
   @override
   Widget build(BuildContext context) {

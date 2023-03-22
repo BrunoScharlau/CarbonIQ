@@ -1,26 +1,19 @@
 import 'package:flutter/material.dart';
 import 'main_menu_widgets.dart';
+import 'package:intl/intl.dart';
 
-class MainMenuView extends StatefulWidget {
+class MainMenuView extends StatelessWidget {
   final String username;
 
   const MainMenuView(this.username, {super.key});
 
   @override
-  State<MainMenuView> createState() => _MainMenuViewState();
-}
-
-class _MainMenuViewState extends State<MainMenuView> {
-  String month = 'MONTH';
-
-  @override
-  void initState() {
-    super.initState();
-    month = "Febuary";
-  }
-
-  @override
   Widget build(BuildContext context) {
+    var now = DateTime.now();
+    var formatter = DateFormat('MMMM');
+    String formatted = formatter.format(now);
+    final String month = formatted;
+
     return Scaffold(
         appBar: AppBar(
           actions: [
@@ -36,7 +29,7 @@ class _MainMenuViewState extends State<MainMenuView> {
         ),
         body: ListView(
           children: [
-            Text("Hi ${widget.username},",
+            Text("Hi $username,",
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
                 textAlign: TextAlign.center),
