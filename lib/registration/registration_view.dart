@@ -11,7 +11,7 @@ class RegistrationView extends StatefulWidget {
 }
 
 class _RegistrationViewState extends State<RegistrationView> {
-  String username = "no-username-entered";
+  final ValueNotifier<String> usernameNotifier = ValueNotifier<String>('');
 
   @override
   void initState() {
@@ -52,14 +52,14 @@ class _RegistrationViewState extends State<RegistrationView> {
                                           "What's your name?",
                                           'username',
                                           TextAnswerInputWidget(
-                                              ValueNotifier(username)))
+                                              usernameNotifier))
                                     ],
                                     () {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                MainMenuView(username)),
+                                            builder: (context) => MainMenuView(
+                                                usernameNotifier.value)),
                                         (r) => false, // Clear everything
                                       );
                                     },
