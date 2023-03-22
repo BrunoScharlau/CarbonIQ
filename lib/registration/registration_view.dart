@@ -4,9 +4,7 @@ import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
 class RegistrationView extends StatelessWidget {
-  final ValueNotifier<String> usernameNotifier = ValueNotifier<String>('');
-
-  RegistrationView({super.key});
+  const RegistrationView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +36,15 @@ class RegistrationView extends StatelessWidget {
                           MaterialPageRoute(
                               builder: (context) => QuizView(
                                     [
-                                      QuizQuestion(
-                                          "What's your name?",
-                                          'username',
-                                          TextAnswerInputWidget(
-                                              usernameNotifier))
+                                      QuizQuestion("What's your name?",
+                                          'username', newTextAnswerWidget)
                                     ],
-                                    () {
+                                    (answers) {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => MainMenuView(
-                                                usernameNotifier.value)),
+                                                answers['username'])),
                                         (r) => false, // Clear everything
                                       );
                                     },

@@ -4,16 +4,17 @@ import 'package:gretapp/survey/survey_widgets.dart';
 class QuizQuestion<T> {
   final String prompt;
   final String identifier;
-  final AnswerInputWidget<T> widget;
+  final AnswerInputWidget<T> Function() widgetGenerator;
 
-  QuizQuestion(this.prompt, this.identifier, this.widget);
+  QuizQuestion(this.prompt, this.identifier, this.widgetGenerator);
 }
 
 class QuizView extends StatefulWidget {
   final List<QuizQuestion> questions;
-  final VoidCallback onComplete;
+  final Function(Map) onComplete;
+  final Map<String, dynamic> answers = {};
 
-  const QuizView(this.questions, this.onComplete, {super.key});
+  QuizView(this.questions, this.onComplete, {super.key});
 
   @override
   State<QuizView> createState() => _QuizViewState();
@@ -24,6 +25,8 @@ class _QuizViewState extends State<QuizView> {
 
   @override
   Widget build(BuildContext context) {
+    final answerInputWidget = widget.questions[questionIndex].widgetGenerator();
+
     return Scaffold(
         appBar: AppBar(
           actions: [
@@ -49,13 +52,15 @@ class _QuizViewState extends State<QuizView> {
               Text(widget.questions[questionIndex].prompt,
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 32)),
-              widget.questions[questionIndex].widget,
+              answerInputWidget,
               ElevatedButton(
                   onPressed: () {
+                    widget.answers[widget.questions[questionIndex].identifier] =
+                        answerInputWidget.getInput();
                     if (questionIndex < widget.questions.length - 1) {
                       questionIndex++;
                     } else {
-                      widget.onComplete();
+                      widget.onComplete(widget.answers);
                     }
                   },
                   child: Text(questionIndex < widget.questions.length - 1
