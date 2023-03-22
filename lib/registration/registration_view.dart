@@ -3,18 +3,8 @@ import 'package:gretapp/main_menu/main_menu_view.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
-class RegistrationView extends StatefulWidget {
+class RegistrationView extends StatelessWidget {
   const RegistrationView({super.key});
-
-  @override
-  State<RegistrationView> createState() => _RegistrationViewState();
-}
-
-class _RegistrationViewState extends State<RegistrationView> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +37,14 @@ class _RegistrationViewState extends State<RegistrationView> {
                               builder: (context) => QuizView(
                                     [
                                       QuizQuestion("What's your name?",
-                                          const TextAnswerInputWidget())
+                                          'username', newTextAnswerWidget)
                                     ],
                                     (answers) {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                MainMenuView(answers[0])),
+                                            builder: (context) => MainMenuView(
+                                                answers['username'])),
                                         (r) => false, // Clear everything
                                       );
                                     },
