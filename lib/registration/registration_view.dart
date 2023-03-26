@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gretapp/main_menu/main_menu_view.dart';
+import 'package:gretapp/registration/user.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
@@ -37,14 +38,17 @@ class RegistrationView extends StatelessWidget {
                               builder: (context) => QuizView(
                                     [
                                       QuizQuestion("What's your name?",
-                                          'username', newTextAnswerWidget)
+                                          'username', newTextAnswerWidget),
+                                      QuizQuestion("What's your age?", 'age',
+                                          newNumberAnswerWidget),
                                     ],
                                     (answers) {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => MainMenuView(
-                                                answers['username'])),
+                                                UserAccount(
+                                                    answers['username']))),
                                         (r) => false, // Clear everything
                                       );
                                     },

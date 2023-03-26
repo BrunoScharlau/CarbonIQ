@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gretapp/registration/user.dart';
 import 'main_menu_widgets.dart';
 import 'package:intl/intl.dart';
 
 class MainMenuView extends StatelessWidget {
-  final String username;
+  final UserAccount user;
 
-  const MainMenuView(this.username, {super.key});
+  const MainMenuView(this.user, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class MainMenuView extends StatelessWidget {
         ),
         body: ListView(
           children: [
-            Text("Hi $username,",
+            Text("Hi ${user.name},",
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
                 textAlign: TextAlign.center),
