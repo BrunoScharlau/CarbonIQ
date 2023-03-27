@@ -3,6 +3,7 @@ import 'package:gretapp/main_menu/main_menu_view.dart';
 import 'package:gretapp/registration/user.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
+import 'package:gretapp/survey/survey_questions.dart';
 
 class RegistrationView extends StatelessWidget {
   const RegistrationView({super.key});
@@ -35,20 +36,15 @@ class RegistrationView extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => QuizView(
-                                    [
-                                      QuizQuestion("What's your name?",
-                                          'username', newTextAnswerWidget),
-                                      QuizQuestion("What's your age?", 'age',
-                                          newNumberAnswerWidget),
-                                    ],
+                              builder: (context) => SurveyView(
+                                    const [nameQuestion, commuteTypeQuestion],
                                     (answers) {
                                       Navigator.pushAndRemoveUntil(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => MainMenuView(
                                                 UserAccount(
-                                                    answers['username']))),
+                                                    answers['username'], []))),
                                         (r) => false, // Clear everything
                                       );
                                     },

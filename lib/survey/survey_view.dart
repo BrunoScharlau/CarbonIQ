@@ -1,31 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
-class QuizQuestion<T> {
-  final String prompt;
-  final String identifier;
-  final AnswerInputWidget<T> Function() widgetGenerator;
-
-  QuizQuestion(this.prompt, this.identifier, this.widgetGenerator);
-}
-
-class QuizView extends StatefulWidget {
-  final List<QuizQuestion> questions;
+class SurveyView extends StatefulWidget {
+  final List<SurveyQuestion> questions;
   final Function(Map) onComplete;
   final Map<String, dynamic> answers = {};
 
-  QuizView(this.questions, this.onComplete, {super.key});
+  SurveyView(this.questions, this.onComplete, {super.key});
 
   @override
-  State<QuizView> createState() => _QuizViewState();
+  State<SurveyView> createState() => _SurveyViewState();
 }
 
-class _QuizViewState extends State<QuizView> {
+class _SurveyViewState extends State<SurveyView> {
   int questionIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final answerInputWidget = widget.questions[questionIndex].widgetGenerator();
+    final answerInputWidget = widget.questions[questionIndex].generateWidget();
 
     return WillPopScope(
       onWillPop: () {
@@ -57,7 +50,8 @@ class _QuizViewState extends State<QuizView> {
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 32)),
                 answerInputWidget,
-                ElevatedButton(
+                EnableableButton(
+                    enabled: answerInputWidget.hasInput,
                     onPressed: () {
                       widget.answers[widget.questions[questionIndex]
                           .identifier] = answerInputWidget.getInput();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gretapp/debug_menu/debug_menu_view.dart';
 import 'package:gretapp/registration/registration_view.dart';
 
 void main() {
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: RegistrationView(),
+      home: const DebugMenuView(),
     );
   }
 }
