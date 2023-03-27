@@ -4,8 +4,8 @@ import 'package:gretapp/survey/survey_widgets.dart';
 
 class SurveyView extends StatefulWidget {
   final List<SurveyQuestion> questions;
-  final Function(Map) onComplete;
-  final Map<String, dynamic> answers = {};
+  final Function(Map<SurveyQuestion, dynamic>) onComplete;
+  final Map<SurveyQuestion, dynamic> answers = {};
 
   SurveyView(this.questions, this.onComplete, {super.key});
 
@@ -53,8 +53,8 @@ class _SurveyViewState extends State<SurveyView> {
                 EnableableButton(
                     enabled: answerInputWidget.hasInput,
                     onPressed: () {
-                      widget.answers[widget.questions[questionIndex]
-                          .identifier] = answerInputWidget.getInput();
+                      widget.answers[widget.questions[questionIndex]] =
+                          answerInputWidget.getInput();
                       if (questionIndex < widget.questions.length - 1) {
                         setState(() {
                           questionIndex++;
