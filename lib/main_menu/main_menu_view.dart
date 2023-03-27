@@ -4,6 +4,7 @@ import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'main_menu_widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class MainMenuView extends StatelessWidget {
   final UserAccount user;
@@ -41,8 +42,11 @@ class MainMenuView extends StatelessWidget {
                 Text("here's what your impact for $month looks like",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20)),
-                const DataBox(DataBoxType.comparison),
-                const DataBox(DataBoxType.graph)
+                DataBox(
+                    "Some graph",
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 150),
+                        child: LineChart(generateChartData()))),
               ],
             ),
             Positioned(
@@ -81,5 +85,50 @@ void startDailySurvey(BuildContext context, UserAccount userAccount) {
                 );
               },
             )),
+  );
+}
+
+LineChartData generateChartData() {
+  return LineChartData(
+    titlesData: FlTitlesData(
+      show: true,
+      rightTitles: AxisTitles(
+        sideTitles: SideTitles(showTitles: false),
+      ),
+      topTitles: AxisTitles(
+        sideTitles: SideTitles(showTitles: false),
+      ),
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          interval: 1,
+        ),
+      ),
+      leftTitles: AxisTitles(
+        sideTitles: SideTitles(showTitles: true, interval: 1),
+      ),
+    ),
+    lineBarsData: [
+      LineChartBarData(
+        spots: const [
+          FlSpot(0, 3),
+          FlSpot(2.6, 2),
+          FlSpot(4.9, 5),
+          FlSpot(6.8, 3.1),
+          FlSpot(8, 4),
+          FlSpot(9.5, 3),
+          FlSpot(11, 4),
+        ],
+        isCurved: true,
+        color: Colors.red,
+        barWidth: 2,
+        isStrokeCapRound: true,
+        dotData: FlDotData(
+          show: false,
+        ),
+        belowBarData:
+            BarAreaData(show: true, color: const Color.fromARGB(50, 255, 0, 0)),
+      ),
+    ],
   );
 }
