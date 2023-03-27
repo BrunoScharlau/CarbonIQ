@@ -13,6 +13,13 @@ class SurveyQuestion<T> {
   AnswerInputWidget<T> generateWidget() {
     return widgetGenerator(parameters);
   }
+
+  @override
+  bool operator ==(Object other) =>
+      other is SurveyQuestion && other.identifier == identifier;
+
+  @override
+  int get hashCode => identifier.hashCode;
 }
 
 class SurveySession {
@@ -63,3 +70,13 @@ const dietQuestion = SurveyQuestion(
         MultipleChoiceOption("Mixed 🍴", 'mixed')
       ]
     });
+
+List<SurveyQuestion> generateDailySurveyQuestions() {
+  return [
+    householdSizeQuestion,
+    livingSpaceQuestion,
+    commuteDistanceQuestion,
+    commuteTypeQuestion,
+    dietQuestion
+  ];
+}

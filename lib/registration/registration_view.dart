@@ -44,7 +44,8 @@ class RegistrationView extends StatelessWidget {
                                         MaterialPageRoute(
                                             builder: (context) => MainMenuView(
                                                 UserAccount(
-                                                    answers['username'], []))),
+                                                    answers[nameQuestion],
+                                                    []))),
                                         (r) => false, // Clear everything
                                       );
                                     },
