@@ -27,3 +27,48 @@ class DataBox extends StatelessWidget {
     );
   }
 }
+
+class Comparison {
+  final String name;
+  final String value;
+  final String emoji;
+  final Color color;
+
+  const Comparison(this.name, this.value, this.emoji, this.color);
+}
+
+class ComparisonLister extends StatelessWidget {
+  final List<Comparison> comparisons;
+
+  const ComparisonLister(this.comparisons, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+        crossAxisCount: 2,
+        children: comparisons
+            .map((comparison) => Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: null,
+                      shape: BoxShape.circle,
+                      color: comparison.color,
+                    ),
+                    child: Center(
+                      child: Column(children: [
+                        Text(comparison.emoji,
+                            style: const TextStyle(fontSize: 32)),
+                        const Padding(padding: EdgeInsets.all(10)),
+                        Text(comparison.value,
+                            style: const TextStyle(
+                                fontSize: 32, fontWeight: FontWeight.bold)),
+                        const Padding(padding: EdgeInsets.all(10)),
+                        Text(comparison.name),
+                      ]),
+                    ),
+                  ),
+                ))
+            .toList());
+  }
+}
