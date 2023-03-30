@@ -43,10 +43,20 @@ class MainMenuView extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20)),
                 DataBox(
-                    "Some graph",
+                    "How your emissions evolved this month",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 150),
                         child: LineChart(generateChartData()))),
+                DataBox(
+                    "What makes up most of your carbon footprint",
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 300),
+                        child: PieChart(generatePieChartData()))),
+                DataBox(
+                    "What your impact compares to",
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 500),
+                        child: ComparisonLister(generateComparisons())))
               ],
             ),
             Positioned(
@@ -131,4 +141,55 @@ LineChartData generateChartData() {
       ),
     ],
   );
+}
+
+PieChartData generatePieChartData() {
+  return PieChartData(
+    sectionsSpace: 0,
+    centerSpaceRadius: double.infinity,
+    sections: [
+      PieChartSectionData(
+        color: Colors.red,
+        value: 25,
+        title: "25% Transport 🚗",
+        radius: 50,
+        titleStyle: const TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      PieChartSectionData(
+        color: Colors.green,
+        value: 15,
+        title: "15% Energy ⚡",
+        radius: 50,
+        titleStyle: const TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      PieChartSectionData(
+        color: Colors.blue,
+        value: 10,
+        title: "10% Waste 🗑",
+        radius: 50,
+        titleStyle: const TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      PieChartSectionData(
+        color: Colors.yellow,
+        value: 40,
+        title: "40% Food 🍔",
+        radius: 50,
+        titleStyle: const TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    ],
+  );
+}
+
+List<Comparison> generateComparisons() {
+  return [
+    const Comparison("trees", '500', '🌳', Colors.green),
+    const Comparison(
+        "of average emissions per person", '5.2x', '👨', Colors.red),
+    const Comparison("earths required if everyone lived like you", '1.2x', '🌍',
+        Colors.blue),
+  ];
 }
