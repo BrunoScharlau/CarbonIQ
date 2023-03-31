@@ -1,3 +1,4 @@
+import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
 class SurveyQuestion<T> {
@@ -6,9 +7,10 @@ class SurveyQuestion<T> {
   final AnswerInputWidget<T> Function(Map<String, dynamic>? parameters)
       widgetGenerator;
   final Map<String, dynamic>? parameters;
+  final Function<bool>(Map<String, dynamic> answers)? shouldSkip;
 
   const SurveyQuestion(this.prompt, this.identifier, this.widgetGenerator,
-      {this.parameters});
+      {this.parameters, this.shouldSkip});
 
   AnswerInputWidget<T> generateWidget() {
     return widgetGenerator(parameters);
@@ -32,51 +34,102 @@ class SurveySession {
 const nameQuestion =
     SurveyQuestion("What's your name?", 'username', newTextAnswerWidget);
 
-const householdSizeQuestion = SurveyQuestion(
-    "How many people live in your household?",
-    'houseSize',
-    newNumberAnswerWidget);
+final locationQuestion = SurveyQuestion(
+    "Where do you live?", 'location', newMultipleChoiceAnswerWidget,
+    parameters: {
+      'options': [
+        MultipleChoiceOption("West 🌄", Location.west.name),
+        MultipleChoiceOption("South 🌅", Location.south.name),
+        MultipleChoiceOption("Northeast 🌇", Location.northeast.name),
+        MultipleChoiceOption("Midwest 🌆", Location.midwest.name)
+      ]
+    });
 
-const livingSpaceQuestion = SurveyQuestion(
-    "How many square feet is your living space?",
-    'livingSpace',
-    newNumberAnswerWidget);
+final householdTypeQuestion = SurveyQuestion(
+    "What type of household do you live in?",
+    'householdType',
+    newMultipleChoiceAnswerWidget,
+    parameters: {
+      'options': [
+        MultipleChoiceOption(
+            "Family attached 🏠", HouseholdType.familyAttached.name),
+        MultipleChoiceOption(
+            "Family detached 🏡", HouseholdType.familyDetached.name),
+        MultipleChoiceOption(
+            "Appartments 2-4 🏢", HouseholdType.appartments24.name),
+        MultipleChoiceOption(
+            "Appartments 5+ 🏢", HouseholdType.appartments5p.name),
+        MultipleChoiceOption("Mobile home 🏠", HouseholdType.mobileHome.name)
+      ]
+    });
+
+final carTypeQuestion = SurveyQuestion(
+    "What type of car do you drive?", 'carType', newMultipleChoiceAnswerWidget,
+    parameters: {
+      'options': [
+        MultipleChoiceOption("None 🙅‍♂️", CarType.none.name),
+        MultipleChoiceOption("Gas 🚗", CarType.gas.name),
+        MultipleChoiceOption("Electric 🚗", CarType.electric.name),
+        MultipleChoiceOption("Hybrid 🚗", CarType.hybrid.name)
+      ]
+    });
 
 const commuteDistanceQuestion = SurveyQuestion(
     "How many miles do you commute to work each day?",
-    'commute',
+    'commuteDistance',
     newNumberAnswerWidget);
 
-const commuteTypeQuestion = SurveyQuestion(
+final commuteTypeQuestion = SurveyQuestion(
     "How do you commute to work?", 'commuteType', newMultipleChoiceAnswerWidget,
     parameters: {
       'options': [
-        MultipleChoiceOption("Car 🚗", 'car'),
-        MultipleChoiceOption("Bus 🚌", 'bus'),
-        MultipleChoiceOption("Train 🚄", 'train'),
-        MultipleChoiceOption("Bike 🚲", 'bike'),
-        MultipleChoiceOption("Walk 🚶‍♀️", 'walk')
+        MultipleChoiceOption("Car 🚗", CommuteMethod.car.name),
+        MultipleChoiceOption("Motorbike 🛵", CommuteMethod.motorbike.name),
+        MultipleChoiceOption("Bus 🚌", CommuteMethod.bus.name),
+        MultipleChoiceOption("Train 🚄", CommuteMethod.train.name),
+        MultipleChoiceOption("Bike 🚲", CommuteMethod.bike.name),
+        MultipleChoiceOption("Walk 🚶‍♀️", CommuteMethod.walk.name)
       ]
     });
 
-const dietQuestion = SurveyQuestion(
-    "What is your diet like?", 'diet', newMultipleChoiceAnswerWidget,
-    parameters: {
-      'options': [
-        MultipleChoiceOption("Vegetarian 🥦", 'vegetarian'),
-        MultipleChoiceOption("Vegan 🥬", 'vegan'),
-        MultipleChoiceOption("Pescatarian 🐟", 'pescatarian'),
-        MultipleChoiceOption("Meat 🥩", 'meat'),
-        MultipleChoiceOption("Mixed 🍴", 'mixed')
-      ]
-    });
+const beefMassQuestion = SurveyQuestion(
+    "How many pounds of beef did you eat today?",
+    'beefMass',
+    newNumberAnswerWidget);
 
-List<SurveyQuestion> generateDailySurveyQuestions() {
-  return [
-    householdSizeQuestion,
-    livingSpaceQuestion,
-    commuteDistanceQuestion,
-    commuteTypeQuestion,
-    dietQuestion
-  ];
-}
+const lambPorkChickenMassQuestion = SurveyQuestion(
+    "How many pounds of lamb, pork, and chicken did you eat today?",
+    'lambPorkChickenMass',
+    newNumberAnswerWidget);
+
+const chocolateMassQuestion = SurveyQuestion(
+    "How many pounds of chocolate did you eat today?",
+    'chocolateMass',
+    newNumberAnswerWidget);
+
+const cheeseMassQuestion = SurveyQuestion(
+    "How many pounds of cheese did you eat today?",
+    'cheeseMass',
+    newNumberAnswerWidget);
+
+const coffeeMassQuestion = SurveyQuestion(
+    "How many pounds of coffee did you drink today?",
+    'coffeeMass',
+    newNumberAnswerWidget);
+
+final List<SurveyQuestion> registrationQuestions = [
+  nameQuestion,
+  locationQuestion,
+  householdTypeQuestion,
+  carTypeQuestion
+];
+
+final List<SurveyQuestion> dailySurveyQuestions = [
+  commuteDistanceQuestion,
+  commuteTypeQuestion,
+  beefMassQuestion,
+  lambPorkChickenMassQuestion,
+  chocolateMassQuestion,
+  cheeseMassQuestion,
+  coffeeMassQuestion
+];

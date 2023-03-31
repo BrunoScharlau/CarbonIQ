@@ -22,7 +22,7 @@ class RegistrationView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text("Welcome to APP_NAME!",
+                  const Text("Welcome to CarbonIQ!",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
                       textAlign: TextAlign.center),
@@ -37,7 +37,7 @@ class RegistrationView extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                               builder: (context) => SurveyView(
-                                    const [nameQuestion, commuteTypeQuestion],
+                                    registrationQuestions,
                                     (answers) {
                                       Navigator.pushAndRemoveUntil(
                                         context,
@@ -45,6 +45,9 @@ class RegistrationView extends StatelessWidget {
                                             builder: (context) => MainMenuView(
                                                 UserAccount(
                                                     answers[nameQuestion],
+                                                    SurveySession(
+                                                        DateTime.now(),
+                                                        answers),
                                                     []))),
                                         (r) => false, // Clear everything
                                       );

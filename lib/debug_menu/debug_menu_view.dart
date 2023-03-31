@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gretapp/main_menu/main_menu_view.dart';
 import 'package:gretapp/registration/registration_view.dart';
 import 'package:gretapp/registration/user.dart';
+import 'package:gretapp/survey/survey_questions.dart';
 
 class DebugMenuView extends StatelessWidget {
   const DebugMenuView({super.key});
@@ -17,9 +18,17 @@ class DebugMenuView extends StatelessWidget {
           const Padding(padding: EdgeInsets.only(top: 20)),
           const SimulatedUserButton.newAccount(),
           SimulatedUserButton(
-              UserAccount('Greta', []), 'Environmental Activist'),
-          SimulatedUserButton(UserAccount('Jeff', []), 'Businessman'),
-          SimulatedUserButton(UserAccount('Josh', []), 'Student'),
+              UserAccount('Greta',
+                  SurveySession(DateTime.utc(2023, 03, 01, 22, 53), {}), []),
+              'Environmental Activist'),
+          SimulatedUserButton(
+              UserAccount('Jeff',
+                  SurveySession(DateTime.utc(2023, 03, 01, 23, 17), {}), []),
+              'Businessman'),
+          SimulatedUserButton(
+              UserAccount('Josh',
+                  SurveySession(DateTime.utc(2023, 03, 01, 21, 21), {}), []),
+              'Student'),
           // TODO Actually populate the SurveySessions
         ],
       ),

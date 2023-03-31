@@ -127,6 +127,11 @@ class MultipleChoiceOption {
 
   @override
   int get hashCode => identifier.hashCode;
+
+  @override
+  String toString() {
+    return identifier;
+  }
 }
 
 /// A widget that displays a multiple choice question in the form of a list of radio buttons. It is stateful because it needs to keep track of which radio button is selected.

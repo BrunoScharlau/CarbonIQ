@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/registration/user.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_view.dart';
@@ -15,8 +16,12 @@ class MainMenuView extends StatelessWidget {
   Widget build(BuildContext context) {
     var now = DateTime.now();
     var formatter = DateFormat('MMMM');
-    String formatted = formatter.format(now);
-    final String month = formatted;
+    final String monthName = formatter.format(now);
+
+    final UserRecord record = generateUserRecord(user);
+    final int month = now.millisecondsSinceEpoch ~/ 2.628e+9;
+    final int monthlyEmissionsKg =
+        calculateMonthlyEmissions(record, month) ~/ 1000;
 
     return Scaffold(
         appBar: AppBar(
@@ -39,14 +44,20 @@ class MainMenuView extends StatelessWidget {
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 32),
                     textAlign: TextAlign.center),
-                Text("here's what your impact for $month looks like",
+                Text("here's what your impact for $monthName looks like",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20)),
                 DataBox(
                     "How your emissions evolved this month",
-                    ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 150),
-                        child: LineChart(generateChartData()))),
+                    Column(children: [
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 150),
+                          child: LineChart(generateChartData())),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              "In total, you've emitted $monthlyEmissionsKg KG of CO2 this month")),
+                    ])),
                 DataBox(
                     "What makes up most of your carbon footprint",
                     ConstrainedBox(
@@ -75,7 +86,7 @@ class MainMenuView extends StatelessWidget {
 }
 
 void startDailySurvey(BuildContext context, UserAccount userAccount) {
-  List<SurveyQuestion> questions = generateDailySurveyQuestions();
+  List<SurveyQuestion> questions = dailySurveyQuestions;
 
   Navigator.push(
     context,
