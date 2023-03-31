@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
+import 'package:gretapp/epicos/color_provider.dart';
 
 class SurveyView extends StatefulWidget {
   final List<SurveyQuestion> questions;
@@ -15,6 +16,13 @@ class SurveyView extends StatefulWidget {
 
 class _SurveyViewState extends State<SurveyView> {
   int questionIndex = 0;
+  late ColorProvider colorProvider ;
+
+  @override
+  void initState() {
+    colorProvider = ColorProvider.random();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +36,7 @@ class _SurveyViewState extends State<SurveyView> {
         } else {
           setState(() {
             questionIndex--;
+            colorProvider.changePaletteWithOffset(-1);
           });
           return Future.value(false);
         }
@@ -36,19 +45,20 @@ class _SurveyViewState extends State<SurveyView> {
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
-            iconTheme: const IconThemeData(color: Colors.grey),
+            iconTheme: IconThemeData(color: colorProvider.getColor(ColorType.secondary)),
           ),
+          backgroundColor: colorProvider.getColor(ColorType.background),
           body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView(
               children: [
                 Text("Question ${questionIndex + 1}/${widget.questions.length}",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16, color: colorProvider.getColor(ColorType.secondary)),
                     textAlign: TextAlign.center),
                 Text(widget.questions[questionIndex].prompt,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 32)),
+                    style: TextStyle(fontSize: 32, color: colorProvider.getColor(ColorType.secondary))),
                 answerInputWidget,
                 EnableableButton(
                     enabled: answerInputWidget.hasInput,
@@ -58,6 +68,7 @@ class _SurveyViewState extends State<SurveyView> {
                       if (questionIndex < widget.questions.length - 1) {
                         setState(() {
                           questionIndex++;
+                          colorProvider.changePaletteWithOffset(1);
                         });
                       } else {
                         widget.onComplete(widget.answers);

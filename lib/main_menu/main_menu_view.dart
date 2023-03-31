@@ -5,6 +5,7 @@ import 'package:gretapp/survey/survey_view.dart';
 import 'main_menu_widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:gretapp/epicos/color_provider.dart';
 
 class MainMenuView extends StatelessWidget {
   final UserAccount user;
@@ -35,28 +36,41 @@ class MainMenuView extends StatelessWidget {
           children: [
             ListView(
               children: [
-                Text("Hi ${user.name},",
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 32),
-                    textAlign: TextAlign.center),
-                Text("here's what your impact for $month looks like",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20)),
+
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      Text("Hi ${user.name},",
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 32),
+                          textAlign: TextAlign.center),
+                          Text("here's what your impact for $month looks like",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                ),
+                
                 DataBox(
                     "How your emissions evolved this month",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 150),
-                        child: LineChart(generateChartData()))),
+                        child: LineChart(generateChartData())),
+                        ColorProvider(0)),
                 DataBox(
                     "What makes up most of your carbon footprint",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 300),
-                        child: PieChart(generatePieChartData()))),
+                        child: PieChart(generatePieChartData())),
+                    ColorProvider(1)),
                 DataBox(
                     "What your impact compares to",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 500),
-                        child: ComparisonLister(generateComparisons())))
+                        child: ComparisonLister(generateComparisons())),
+                        
+                    ColorProvider(2))
               ],
             ),
             Positioned(
@@ -64,10 +78,14 @@ class MainMenuView extends StatelessWidget {
                 left: 50,
                 right: 50,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                   onPressed: () {
                     startDailySurvey(context, user);
                   },
-                  child: const Text('Take your daily survey'),
+                  child: const Padding(
+                    padding: EdgeInsets.all(18.0),
+                    child: Text('Start daily survey', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                  ),
                 ))
           ],
         ));
@@ -149,36 +167,36 @@ PieChartData generatePieChartData() {
     centerSpaceRadius: double.infinity,
     sections: [
       PieChartSectionData(
-        color: Colors.red,
+        color: Colors.red.shade400,
         value: 25,
-        title: "25% Transport 🚗",
+        title: "25% 🚗",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red.shade900),
       ),
       PieChartSectionData(
-        color: Colors.green,
+        color: Colors.green.shade400,
         value: 15,
-        title: "15% Energy ⚡",
+        title: "15% ⚡",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green.shade900),
       ),
       PieChartSectionData(
-        color: Colors.blue,
+        color: Colors.blue.shade400,
         value: 10,
-        title: "10% Waste 🗑",
+        title: "10% 🗑",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue.shade900),
       ),
       PieChartSectionData(
-        color: Colors.yellow,
+        color: Colors.yellow.shade400,
         value: 40,
-        title: "40% Food 🍔",
+        title: "40% 🍔",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.yellow.shade900),
       ),
     ],
   );
