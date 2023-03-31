@@ -19,7 +19,22 @@ class DebugMenuView extends StatelessWidget {
           const SimulatedUserButton.newAccount(),
           SimulatedUserButton(
               UserAccount('Greta',
-                  SurveySession(DateTime.utc(2023, 03, 01, 22, 53), {}), []),
+                  SurveySession(DateTime.utc(2023, 03, 01, 22, 53), {
+                    nameQuestion: 'Greta',
+                    locationQuestion: 'northeast',
+                    householdTypeQuestion: 'familyAttached',
+                    carTypeQuestion: 'none'
+                  }), [
+                    SurveySession(DateTime.utc(2023, 03, 20, 20, 10), {
+                      commuteDistanceQuestion: 2,
+                      commuteMethodQuestion: 'train',
+                      beefMassQuestion: 0,
+                      lambPorkChickenMassQuestion: 0.2,
+                      chocolateMassQuestion: 0.025,
+                      cheeseMassQuestion: 0.07,
+                      coffeeMassQuestion: 0.25
+                    })
+                  ]),
               'Environmental Activist'),
           SimulatedUserButton(
               UserAccount('Jeff',
@@ -29,7 +44,6 @@ class DebugMenuView extends StatelessWidget {
               UserAccount('Josh',
                   SurveySession(DateTime.utc(2023, 03, 01, 21, 21), {}), []),
               'Student'),
-          // TODO Actually populate the SurveySessions
         ],
       ),
     );

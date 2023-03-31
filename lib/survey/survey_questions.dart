@@ -31,6 +31,8 @@ class SurveySession {
   SurveySession(this.time, this.answers);
 }
 
+// Registration questions
+
 const nameQuestion =
     SurveyQuestion("What's your name?", 'username', newTextAnswerWidget);
 
@@ -74,12 +76,14 @@ final carTypeQuestion = SurveyQuestion(
       ]
     });
 
+// Daily survey questions
+
 const commuteDistanceQuestion = SurveyQuestion(
     "How many miles do you commute to work each day?",
     'commuteDistance',
     newNumberAnswerWidget);
 
-final commuteTypeQuestion = SurveyQuestion(
+final commuteMethodQuestion = SurveyQuestion(
     "How do you commute to work?", 'commuteType', newMultipleChoiceAnswerWidget,
     parameters: {
       'options': [
@@ -126,7 +130,7 @@ final List<SurveyQuestion> registrationQuestions = [
 
 final List<SurveyQuestion> dailySurveyQuestions = [
   commuteDistanceQuestion,
-  commuteTypeQuestion,
+  commuteMethodQuestion,
   beefMassQuestion,
   lambPorkChickenMassQuestion,
   chocolateMassQuestion,

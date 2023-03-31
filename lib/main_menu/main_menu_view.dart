@@ -18,8 +18,10 @@ class MainMenuView extends StatelessWidget {
     var formatter = DateFormat('MMMM');
     final String monthName = formatter.format(now);
 
+    print(user.completedSurveys.length);
+
     final UserRecord record = generateUserRecord(user);
-    final int month = now.millisecondsSinceEpoch ~/ 2.628e+9;
+    final int month = getMonthNumber(now);
     final int monthlyEmissionsKg =
         calculateMonthlyEmissions(record, month) ~/ 1000;
 
