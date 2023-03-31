@@ -76,7 +76,7 @@ class ComparisonLister extends StatelessWidget {
                           ]),
                         ),
                       ),
-                      Text(comparison.name, textAlign: TextAlign.center,),
+                      Text(comparison.name, textAlign: TextAlign.center, style: const TextStyle( color: Colors.white),),
                     ],
                   ),
                 ))

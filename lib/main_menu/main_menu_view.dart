@@ -34,51 +34,61 @@ class MainMenuView extends StatelessWidget {
         ),
         body: Stack(
           children: [
-            ListView(
-              children: [
-
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      Text("Hi ${user.name},",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 32),
-                          textAlign: TextAlign.center),
-                          Text("here's what your impact for $month looks like",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 20)),
-                    ],
+            ShaderMask(
+              shaderCallback: (rect) {
+              return LinearGradient(
+                begin: Alignment.center.add(Alignment(0, .6)),
+                end: Alignment.bottomCenter.add(Alignment(0, -.25)),
+                colors: [Colors.white, Colors.transparent],
+              ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+            },
+            blendMode: BlendMode.dstIn,
+              child: ListView(
+                children: [
+            
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Text("Hi ${user.name},",
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 32),
+                            textAlign: TextAlign.center),
+                            Text("here's what your impact for $month looks like",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 20)),
+                      ],
+                    ),
                   ),
-                ),
-                
-                DataBox(
-                    "How your emissions evolved this month",
-                    ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 150),
-                        child: LineChart(generateChartData())),
-                        ColorProvider(0)),
-                DataBox(
-                    "What makes up most of your carbon footprint",
-                    ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 300),
-                        child: PieChart(generatePieChartData())),
-                    ColorProvider(1)),
-                DataBox(
-                    "What your impact compares to",
-                    ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 500),
-                        child: ComparisonLister(generateComparisons())),
-                        
-                    ColorProvider(2))
-              ],
+                  
+                  DataBox(
+                      "How your emissions evolved this month",
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 150),
+                          child: LineChart(generateChartData())),
+                      ColorProvider(0)),
+                  DataBox(
+                      "What makes up most of your carbon footprint",
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 300),
+                          child: PieChart(generatePieChartData())),
+                      ColorProvider(1)),
+                  DataBox(
+                      "What your impact compares to",
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 500),
+                          child: ComparisonLister(generateComparisons())),
+                          
+                      ColorProvider(2))
+                ],
+              ),
             ),
             Positioned(
                 bottom: 25,
                 left: 50,
                 right: 50,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 255, 37, 109), ),
                   onPressed: () {
                     startDailySurvey(context, user);
                   },
@@ -172,7 +182,7 @@ PieChartData generatePieChartData() {
         title: "25% 🚗",
         radius: 50,
         titleStyle: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red.shade900),
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
       PieChartSectionData(
         color: Colors.green.shade400,
@@ -180,7 +190,7 @@ PieChartData generatePieChartData() {
         title: "15% ⚡",
         radius: 50,
         titleStyle: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green.shade900),
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
       PieChartSectionData(
         color: Colors.blue.shade400,
@@ -188,7 +198,7 @@ PieChartData generatePieChartData() {
         title: "10% 🗑",
         radius: 50,
         titleStyle: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue.shade900),
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
       PieChartSectionData(
         color: Colors.yellow.shade400,
@@ -196,7 +206,7 @@ PieChartData generatePieChartData() {
         title: "40% 🍔",
         radius: 50,
         titleStyle: TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.yellow.shade900),
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
     ],
   );

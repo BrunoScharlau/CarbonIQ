@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:gretapp/epicos/color_provider.dart';
+
 /// A stateful button that enables and disables itself according to the specified ValueNotifier.
 class EnableableButton extends StatefulWidget {
   final ValueNotifier<bool> enabled;
   final VoidCallback onPressed;
   final Widget child;
+  final ColorProvider _colorProvider;
 
   const EnableableButton(
+      this._colorProvider,
       {super.key,
       required this.enabled,
       required this.onPressed,
@@ -39,6 +43,7 @@ class _EnableableButtonState extends State<EnableableButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+        style: ElevatedButton.styleFrom(backgroundColor: widget._colorProvider.getColor(ColorType.primary)),
         onPressed: widget.enabled.value ? widget.onPressed : null,
         child: widget.child);
   }

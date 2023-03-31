@@ -61,6 +61,7 @@ class _SurveyViewState extends State<SurveyView> {
                     style: TextStyle(fontSize: 32, color: colorProvider.getColor(ColorType.secondary))),
                 answerInputWidget,
                 EnableableButton(
+                    colorProvider,
                     enabled: answerInputWidget.hasInput,
                     onPressed: () {
                       widget.answers[widget.questions[questionIndex]] =
