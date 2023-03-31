@@ -46,8 +46,7 @@ class UserRecord {
 
   final List<DailyRecord> dailyRecords;
 
-  UserRecord(this.car, this.location, this.householdType,
-      this.dailyRecords);
+  UserRecord(this.car, this.location, this.householdType, this.dailyRecords);
 }
 
 int getDayNumber(DateTime time) {
@@ -60,12 +59,15 @@ int getMonthNumber(DateTime time) {
 }
 
 int getMonthNumberFromDay(int dayNumber) {
-  return getMonthNumber(DateTime.fromMillisecondsSinceEpoch(dayNumber * 86400000));
+  return getMonthNumber(
+      DateTime.fromMillisecondsSinceEpoch(dayNumber * 86400000));
 }
 
 List<int> getDaysInMonth(int monthNumber) {
-  int firstDayInMonth = getDayNumber(DateTime(monthNumber ~/ 12, monthNumber % 12, 1));
-  int firstDayInNextMonth = getDayNumber(DateTime(monthNumber ~/ 12 + 1, monthNumber % 12, 1));
+  int firstDayInMonth =
+      getDayNumber(DateTime(monthNumber ~/ 12, monthNumber % 12, 1));
+  int firstDayInNextMonth =
+      getDayNumber(DateTime(monthNumber ~/ 12 + 1, monthNumber % 12, 1));
 
   List<int> days = [];
   for (int i = firstDayInMonth; i < firstDayInNextMonth; i++) {
@@ -149,8 +151,9 @@ UserRecord generateUserRecord(UserAccount user) {
       car,
       Location.values
           .byName(user.signupSurvey.answers[locationQuestion]!.toString()),
-      HouseholdType.values.byName(
-          user.signupSurvey.answers[householdTypeQuestion]!.toString()), dailyRecords);
+      HouseholdType.values
+          .byName(user.signupSurvey.answers[householdTypeQuestion]!.toString()),
+      dailyRecords);
 }
 
 const kwhEmissions = 390;
@@ -217,20 +220,25 @@ const poundsToKg = 0.453592;
 
 int calculateDietEmissions(Diet diet) {
   return (poundsToKg *
-      1000 *
-      (diet.beefMass * 100 +
-          diet.lambPorkChickenMass *
-              14 + // TODO Split this up into more precise components
-          diet.chocolateMass * 34 +
-          diet.cheeseMass * 24 +
-          diet.coffeeMass * 29)).floor();
+          1000 *
+          (diet.beefMass * 100 +
+              diet.lambPorkChickenMass *
+                  14 + // TODO Split this up into more precise components
+              diet.chocolateMass * 34 +
+              diet.cheeseMass * 24 +
+              diet.coffeeMass * 29))
+      .floor();
 }
 
-/// Used to fill in missing days by copying the last given day
-DailyRecord generateMissingDailyRecord(UserRecord record, int day) {
+/// Used to fill in missing days by copying the last given day. If a record for that day is present, it will be returned.
+DailyRecord getOrGenerateDailyRecord(UserRecord record, int day) {
   DailyRecord? lastKnownRecord;
   for (DailyRecord dailyRecord in record.dailyRecords) {
-    if (dailyRecord.dayNumber <= day && (lastKnownRecord == null || dailyRecord.dayNumber > lastKnownRecord.dayNumber)) {
+    if (dailyRecord.dayNumber == day) {
+      return dailyRecord;
+    } else if (dailyRecord.dayNumber < day &&
+        (lastKnownRecord == null ||
+            dailyRecord.dayNumber > lastKnownRecord.dayNumber)) {
       lastKnownRecord = dailyRecord;
     }
   }
@@ -238,16 +246,18 @@ DailyRecord generateMissingDailyRecord(UserRecord record, int day) {
   if (lastKnownRecord == null) {
     return DailyRecord(day, 0, CommuteMethod.walk, Diet(0, 0, 0, 0, 0));
   } else {
-    return DailyRecord(day, lastKnownRecord.commuteDistance, lastKnownRecord.commuteMethod, lastKnownRecord.diet);
+    return DailyRecord(day, lastKnownRecord.commuteDistance,
+        lastKnownRecord.commuteMethod, lastKnownRecord.diet);
   }
 }
 
-/// Return the emissions for a given day
+/// Return the emissions for a given dailyRecord
 int calculateDailyEmissions(UserRecord record, DailyRecord dailyRecord) {
   return (calculateYearlyHomeMaintenanceEmissions(record) / 365 +
-      calculateCommuteEmissions(
-          record, dailyRecord.commuteMethod, dailyRecord.commuteDistance) +
-      calculateDietEmissions(dailyRecord.diet)).round();
+          calculateCommuteEmissions(
+              record, dailyRecord.commuteMethod, dailyRecord.commuteDistance) +
+          calculateDietEmissions(dailyRecord.diet))
+      .round();
 }
 
 int calculateMonthlyEmissions(UserRecord record, int month) {
@@ -263,8 +273,14 @@ int calculateMonthlyEmissions(UserRecord record, int month) {
   }
 
   for (int missedDay in daysInMonth) {
-    emissions += calculateDailyEmissions(record, generateMissingDailyRecord(record, missedDay));
+    emissions += calculateDailyEmissions(
+        record, getOrGenerateDailyRecord(record, missedDay));
   }
 
   return emissions;
+}
+
+/// Return the emissions for a given day. The difference with calculateDailyEmissions is that this function takes a number as a day and not a record, and is able to fill in missing days based on previous records
+int getDailyEmissions(UserRecord record, int day) {
+  return calculateDailyEmissions(record, getOrGenerateDailyRecord(record, day));
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/registration/user.dart';
@@ -14,16 +16,17 @@ class MainMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("Building main menu view for user ${user.name}");
+
     var now = DateTime.now();
     var formatter = DateFormat('MMMM');
     final String monthName = formatter.format(now);
 
-    print(user.completedSurveys.length);
-
     final UserRecord record = generateUserRecord(user);
-    final int month = getMonthNumber(now);
+    final int monthNumber = getMonthNumber(now);
+    final int dayNumber = getDayNumber(now);
     final int monthlyEmissionsKg =
-        calculateMonthlyEmissions(record, month) ~/ 1000;
+        calculateMonthlyEmissions(record, monthNumber) ~/ 1000;
 
     return Scaffold(
         appBar: AppBar(
@@ -54,7 +57,8 @@ class MainMenuView extends StatelessWidget {
                     Column(children: [
                       ConstrainedBox(
                           constraints: const BoxConstraints(maxHeight: 150),
-                          child: LineChart(generateChartData())),
+                          child: LineChart(generateChartData(
+                              record, monthNumber, dayNumber))),
                       Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
@@ -111,7 +115,10 @@ void startDailySurvey(BuildContext context, UserAccount userAccount) {
   );
 }
 
-LineChartData generateChartData() {
+LineChartData generateChartData(
+    UserRecord record, int monthNumber, int dayNumber) {
+  log("Generating chart data for month $monthNumber, day $dayNumber");
+
   return LineChartData(
     titlesData: FlTitlesData(
       show: true,
@@ -133,15 +140,10 @@ LineChartData generateChartData() {
     ),
     lineBarsData: [
       LineChartBarData(
-        spots: const [
-          FlSpot(0, 3),
-          FlSpot(2.6, 2),
-          FlSpot(4.9, 5),
-          FlSpot(6.8, 3.1),
-          FlSpot(8, 4),
-          FlSpot(9.5, 3),
-          FlSpot(11, 4),
-        ],
+        spots: record.dailyRecords
+            .map((e) => FlSpot(e.dayNumber.toDouble(),
+                calculateDailyEmissions(record, e).toDouble()))
+            .toList(),
         isCurved: true,
         color: Colors.red,
         barWidth: 2,
