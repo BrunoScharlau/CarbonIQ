@@ -68,7 +68,7 @@ UserRecord generateUserRecord(UserAccount user) {
     // Add a new daily record
     dailyRecords.add(DailyRecord(
         getDayNumber(survey.time),
-        survey.answers[commuteDistanceQuestion] ?? 0,
+        survey.answers[commuteDistanceQuestion],
         CommuteMethod.values
             .byName(survey.answers[commuteMethodQuestion]!.toString()),
         Diet(

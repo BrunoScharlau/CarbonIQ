@@ -69,15 +69,15 @@ final householdTypeQuestion = SurveyQuestion(
 const householdInhabitantCountQuestion = SurveyQuestion(
     "How many people live in your household?",
     'householdInhabitantCount',
-    newNumberAnswerWidget);
+    newIntegerAnswerWidget);
 
 final carTypeQuestion = SurveyQuestion(
     "What type of car do you drive?", 'carType', newMultipleChoiceAnswerWidget,
     parameters: {
       'options': [
         MultipleChoiceOption("None 🙅‍♂️", CarType.none.name),
-        MultipleChoiceOption("Gas 🚗", CarType.gas.name),
-        MultipleChoiceOption("Electric 🚗", CarType.electric.name),
+        MultipleChoiceOption("Gas ⛽", CarType.gas.name),
+        MultipleChoiceOption("Electric 🔌", CarType.electric.name),
         MultipleChoiceOption("Hybrid 🚗", CarType.hybrid.name)
       ]
     });
@@ -87,7 +87,7 @@ final carTypeQuestion = SurveyQuestion(
 const commuteDistanceQuestion = SurveyQuestion(
     "How many miles do you commute to work each day?",
     'commuteDistance',
-    newNumberAnswerWidget);
+    newDoubleAnswerWidget);
 
 final commuteMethodQuestion = SurveyQuestion(
     "How do you commute to work?", 'commuteType', newMultipleChoiceAnswerWidget,
@@ -105,27 +105,27 @@ final commuteMethodQuestion = SurveyQuestion(
 const beefMassQuestion = SurveyQuestion(
     "How many pounds of beef did you eat today?",
     'beefMass',
-    newNumberAnswerWidget);
+    newDoubleAnswerWidget);
 
 const lambPorkChickenMassQuestion = SurveyQuestion(
     "How many pounds of lamb, pork, and chicken did you eat today?",
     'lambPorkChickenMass',
-    newNumberAnswerWidget);
+    newDoubleAnswerWidget);
 
 const chocolateMassQuestion = SurveyQuestion(
     "How many pounds of chocolate did you eat today?",
     'chocolateMass',
-    newNumberAnswerWidget);
+    newDoubleAnswerWidget);
 
 const cheeseMassQuestion = SurveyQuestion(
     "How many pounds of cheese did you eat today?",
     'cheeseMass',
-    newNumberAnswerWidget);
+    newDoubleAnswerWidget);
 
 const coffeeMassQuestion = SurveyQuestion(
     "How many pounds of coffee did you drink today?",
     'coffeeMass',
-    newNumberAnswerWidget);
+    newDoubleAnswerWidget);
 
 final List<SurveyQuestion> registrationQuestions = [
   nameQuestion,
