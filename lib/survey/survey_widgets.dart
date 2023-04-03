@@ -12,8 +12,7 @@ class EnableableButton extends StatefulWidget {
   final Widget child;
   final ColorProvider _colorProvider;
 
-  const EnableableButton(
-      this._colorProvider,
+  const EnableableButton(this._colorProvider,
       {super.key,
       required this.enabled,
       required this.onPressed,
@@ -45,7 +44,8 @@ class _EnableableButtonState extends State<EnableableButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        style: ElevatedButton.styleFrom(backgroundColor: widget._colorProvider.getColor(ColorType.primary)),
+        style: ElevatedButton.styleFrom(
+            backgroundColor: widget._colorProvider.getColor(ColorType.primary)),
         onPressed: widget.enabled.value ? widget.onPressed : null,
         child: widget.child);
   }
@@ -110,8 +110,8 @@ class IntegerAnswerInputWidget extends StatelessWidget
     try {
       return int.parse(editingController.value.text);
     } catch (e) {
-      log("Failed to parse input as integer");
-      log(e.toString());
+      log("Failed to parse input '${editingController.value.text}' as integer: ${e.toString()}",
+          error: e);
       return 0;
     }
   }
@@ -151,8 +151,8 @@ class DoubleAnswerInputWidget extends StatelessWidget
     try {
       return double.parse(editingController.value.text);
     } catch (e) {
-      log("Failed to parse input as double");
-      log(e.toString());
+      log("Failed to parse input '${editingController.value.text}' as double: ${e.toString()}",
+          error: e);
       return 0;
     }
   }
@@ -192,8 +192,9 @@ class MultipleChoiceOption {
 }
 
 /// A widget that displays a multiple choice question in the form of a list of radio buttons. It is stateful because it needs to keep track of which radio button is selected.
+/// The value returned by getInput is the identifier of the selected option.
 class MultipleChoiceAnswerInputWidget extends StatefulWidget
-    implements AnswerInputWidget<MultipleChoiceOption?> {
+    implements AnswerInputWidget<String?> {
   @override
   final ValueNotifier<bool> hasInput = ValueNotifier<bool>(false);
   final List<MultipleChoiceOption> options;
@@ -203,8 +204,8 @@ class MultipleChoiceAnswerInputWidget extends StatefulWidget
   MultipleChoiceAnswerInputWidget(this.options, {super.key});
 
   @override
-  MultipleChoiceOption? getInput() {
-    return selectedOption.value;
+  String? getInput() {
+    return selectedOption.value?.identifier;
   }
 
   @override

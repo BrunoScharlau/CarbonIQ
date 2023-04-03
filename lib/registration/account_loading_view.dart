@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:gretapp/data/user.dart';
 import 'package:gretapp/main_menu/main_menu_view.dart';
+import 'package:gretapp/registration/registration_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountLoadingView extends StatefulWidget {
@@ -11,33 +14,31 @@ class AccountLoadingView extends StatefulWidget {
 }
 
 class _AccountLoadingViewState extends State<AccountLoadingView> {
-  Future<UserAccount> account =
+  Future<UserAccount?> account =
       SharedPreferences.getInstance().then((value) => loadAccount(value));
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: null,
-        body: Center(
-          child: FutureBuilder<UserAccount>(
-              future: account,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  // Load main menu view
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MainMenuView(snapshot.data!)),
-                    (r) => false, // Clear entire navigation stack
-                  );
+    return FutureBuilder<UserAccount?>(
+        future: account,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            log('Existing account found.');
 
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return const Text("Error loading account");
-                } else {
-                  return const CircularProgressIndicator();
-                }
-              }),
-        ));
+            return MainMenuView(snapshot.data!);
+          } else if (snapshot.hasError) {
+            log('Error loading account: ${snapshot.error.toString()}',
+                error: snapshot.error, stackTrace: snapshot.stackTrace);
+
+            return const RegistrationView();
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            log('No existing account found.');
+            return const RegistrationView();
+          } else {
+            log('Loading account...');
+            return const Scaffold(
+                appBar: null, body: Center(child: CircularProgressIndicator()));
+          }
+        });
   }
 }

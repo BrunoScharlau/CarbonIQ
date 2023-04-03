@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
@@ -44,8 +43,10 @@ class SurveySession {
     final json = jsonDecode(jsonStr);
     return SurveySession(
         DateTime.fromMillisecondsSinceEpoch(json["time"]),
-        json["answers"].map(
-            (key, value) => MapEntry(getQuestionFromIdentifier(key), value)));
+        json["answers"]
+            .map(
+                (key, value) => MapEntry(getQuestionFromIdentifier(key), value))
+            .cast<SurveyQuestion, dynamic>());
   }
 }
 

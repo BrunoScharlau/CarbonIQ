@@ -19,18 +19,26 @@ class DebugMenuView extends StatelessWidget {
       body: ListView(
         children: [
           const Padding(padding: EdgeInsets.only(top: 20)),
-          ElevatedButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AccountLoadingView()),
-                    (r) => false // Clear entire navigator stack
-                    );
-              },
-              child: const Text("Load saved account")),
-          const SimulatedUserButton.newAccount(),
-          SimulatedUserButton(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+            child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AccountLoadingView()),
+                      (r) => false // Clear entire navigator stack
+                      );
+                },
+                child: const Text(
+                    "Normal startup routine (load user data if exists, otherwise register)")),
+          ),
+          const DemoUserButton.newAccount(),
+          const Padding(
+              padding: EdgeInsets.only(left: 10, top: 20, bottom: 5),
+              child: Text(
+                  'Demo users (these do not override existing user data)')),
+          DemoUserButton(
               UserAccount(
                   'Greta',
                   SurveySession(DateTime.utc(2023, 04, 01, 22, 53), {
@@ -41,9 +49,10 @@ class DebugMenuView extends StatelessWidget {
                     carTypeQuestion: CarType.none.name
                   }),
                   generateFakeSessions(
-                      123, 0.5, 60, ['walk', 'bike', 'bus', 'train'], 0.05)),
+                      123, 0.5, 60, ['walk', 'bike', 'bus', 'train'], 0.05),
+                  dontSave: true),
               'Environmental Activist'),
-          SimulatedUserButton(
+          DemoUserButton(
               UserAccount(
                   'Jeff',
                   SurveySession(DateTime.utc(2023, 03, 01, 22, 53), {
@@ -53,9 +62,10 @@ class DebugMenuView extends StatelessWidget {
                     householdTypeQuestion: HouseholdType.appartments24.name,
                     carTypeQuestion: CarType.gas.name
                   }),
-                  generateFakeSessions(123, 1.5, 30, ['car', 'train'], 0.4)),
+                  generateFakeSessions(123, 1.5, 30, ['car', 'train'], 0.4),
+                  dontSave: true),
               'Businessman'),
-          SimulatedUserButton(
+          DemoUserButton(
               UserAccount(
                   'Josh',
                   SurveySession(DateTime.utc(2023, 03, 01, 22, 53), {
@@ -66,7 +76,8 @@ class DebugMenuView extends StatelessWidget {
                     carTypeQuestion: CarType.gas.name
                   }),
                   generateFakeSessions(
-                      123, 1.5, 30, ['bike', 'train', 'bus', 'walk'], 0.1)),
+                      123, 1.5, 30, ['bike', 'train', 'bus', 'walk'], 0.1),
+                  dontSave: true),
               'Student')
         ],
       ),
@@ -74,13 +85,13 @@ class DebugMenuView extends StatelessWidget {
   }
 }
 
-class SimulatedUserButton extends StatelessWidget {
+class DemoUserButton extends StatelessWidget {
   final UserAccount? userAccount;
   final String accountTypeDescriptor;
-  const SimulatedUserButton(this.userAccount, this.accountTypeDescriptor,
+  const DemoUserButton(this.userAccount, this.accountTypeDescriptor,
       {super.key});
 
-  const SimulatedUserButton.newAccount({super.key})
+  const DemoUserButton.newAccount({super.key})
       : userAccount = null,
         accountTypeDescriptor = 'New Account';
 
@@ -108,7 +119,7 @@ class SimulatedUserButton extends StatelessWidget {
         },
         child: Text((userAccount != null)
             ? 'Start as ${userAccount!.name} ($accountTypeDescriptor)'
-            : 'Start as new user'),
+            : 'Start as new user (clears existing user data)'),
       ),
     );
   }
