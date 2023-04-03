@@ -16,7 +16,7 @@ class SurveyView extends StatefulWidget {
 
 class _SurveyViewState extends State<SurveyView> {
   int questionIndex = 0;
-  late ColorProvider colorProvider ;
+  late ColorProvider colorProvider;
 
   @override
   void initState() {
@@ -45,7 +45,8 @@ class _SurveyViewState extends State<SurveyView> {
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
-            iconTheme: IconThemeData(color: colorProvider.getColor(ColorType.secondary)),
+            iconTheme: IconThemeData(
+                color: colorProvider.getColor(ColorType.secondary)),
           ),
           backgroundColor: colorProvider.getColor(ColorType.background),
           body: Padding(
@@ -54,27 +55,29 @@ class _SurveyViewState extends State<SurveyView> {
               children: [
                 Text("Question ${questionIndex + 1}/${widget.questions.length}",
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16, color: colorProvider.getColor(ColorType.secondary)),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: colorProvider.getColor(ColorType.secondary)),
                     textAlign: TextAlign.center),
                 Text(widget.questions[questionIndex].prompt,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 32, color: colorProvider.getColor(ColorType.secondary))),
+                    style: TextStyle(
+                        fontSize: 32,
+                        color: colorProvider.getColor(ColorType.secondary))),
                 answerInputWidget,
-                EnableableButton(
-                    colorProvider,
-                    enabled: answerInputWidget.hasInput,
-                    onPressed: () {
-                      widget.answers[widget.questions[questionIndex]] =
-                          answerInputWidget.getInput();
-                      if (questionIndex < widget.questions.length - 1) {
-                        setState(() {
-                          questionIndex++;
-                          colorProvider.changePaletteWithOffset(1);
-                        });
-                      } else {
-                        widget.onComplete(widget.answers);
-                      }
-                    },
+                EnableableButton(colorProvider,
+                    enabled: answerInputWidget.hasInput, onPressed: () {
+                  widget.answers[widget.questions[questionIndex]] =
+                      answerInputWidget.getInput();
+                  if (questionIndex < widget.questions.length - 1) {
+                    setState(() {
+                      questionIndex++;
+                      colorProvider.changePaletteWithOffset(1);
+                    });
+                  } else {
+                    widget.onComplete(widget.answers);
+                  }
+                },
                     child: Text(questionIndex < widget.questions.length - 1
                         ? "Next"
                         : "Finish"))

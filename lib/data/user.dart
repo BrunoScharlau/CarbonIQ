@@ -1,12 +1,15 @@
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/data/datetime.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserAccount {
   final String name;
   final SurveySession signupSurvey;
   final List<SurveySession> completedSurveys;
+  final bool dontSave; // Used to prevent saving demo/debug accounts
 
-  UserAccount(this.name, this.signupSurvey, this.completedSurveys);
+  UserAccount(this.name, this.signupSurvey, this.completedSurveys,
+      {this.dontSave = false});
 }
 
 enum CommuteMethod { car, motorbike, bus, train, bike, walk }
@@ -87,4 +90,28 @@ UserRecord generateUserRecord(UserAccount user) {
       HouseholdType.values
           .byName(user.signupSurvey.answers[householdTypeQuestion]!.toString()),
       dailyRecords);
+}
+
+saveAccount(UserAccount account, SharedPreferences prefs) async {
+  await prefs.setString('save_version', '1.0.0');
+  await prefs.setString('user.name', account.name);
+  await prefs.setString('user.signup_survey', account.signupSurvey.toJSON());
+  await prefs.setStringList('user.completed_surveys',
+      account.completedSurveys.map((survey) => survey.toJSON()).toList());
+}
+
+Future<UserAccount?> loadAccount(SharedPreferences prefs) async {
+  if (prefs.containsKey('user.name')) {
+    String name = prefs.getString('user.name')!;
+    SurveySession signupSurvey =
+        SurveySession.fromJSON(prefs.getString('user.signup_survey')!);
+    List<SurveySession> completedSurveys = prefs
+        .getStringList('user.completed_surveys')!
+        .map((json) => SurveySession.fromJSON(json))
+        .toList();
+
+    return UserAccount(name, signupSurvey, completedSurveys);
+  } else {
+    return null;
+  }
 }
