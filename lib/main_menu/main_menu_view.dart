@@ -1,10 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:gretapp/registration/user.dart';
+import 'package:gretapp/data/carbon.dart';
+import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_view.dart';
-import 'main_menu_widgets.dart';
+import 'package:gretapp/data/datetime.dart';
 import 'package:intl/intl.dart';
+import 'main_menu_widgets.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:gretapp/epicos/color_provider.dart';
 
 class MainMenuView extends StatelessWidget {
   final UserAccount user;
@@ -13,10 +18,14 @@ class MainMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("Building main menu view for user ${user.name}");
+
     var now = DateTime.now();
-    var formatter = DateFormat('MMMM');
-    String formatted = formatter.format(now);
-    final String month = formatted;
+
+    final UserRecord record = generateUserRecord(user);
+    final int dayNumber = getDayNumber(now);
+    final Emissions last30dayEmissions =
+        calculate30DayEmissions(record, dayNumber); // Divide by 1000 to get kg
 
     return Scaffold(
         appBar: AppBar(
@@ -33,31 +42,76 @@ class MainMenuView extends StatelessWidget {
         ),
         body: Stack(
           children: [
-            ListView(
+            ShaderMask(
+              shaderCallback: (rect) {
+              return LinearGradient(
+                begin: Alignment.center.add(Alignment(0, .6)),
+                end: Alignment.bottomCenter.add(Alignment(0, -.25)),
+                colors: [Colors.white, Colors.transparent],
+              ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+            },
+            blendMode: BlendMode.dstIn,
+              child: ListView(
               children: [
                 Text("Hi ${user.name},",
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 32),
                     textAlign: TextAlign.center),
-                Text("here's what your impact for $month looks like",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20)),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                      "This is what your impact over the past 30 days looks like",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20)),
+                ),
                 DataBox(
-                    "Some graph",
+                    "How your emissions evolved during this period",
+                    Column(children: [
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 150),
+                          child:
+                              LineChart(generateChartData(record, dayNumber))),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              "In total, you've emitted ${last30dayEmissions / 1000} KG of CO2 in the last 30 days")),
+                    ]), ColorProvider(0)),
+                DataBox(
+                    "What makes up most of your carbon footprint",
                     ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 150),
-                        child: LineChart(generateChartData()))),
+                        constraints: const BoxConstraints(maxHeight: 300),
+                        child: PieChart(
+                            generatePieChartData(last30dayEmissions))), ColorProvider(1)),
+                DataBox(
+                    "What your impact compares to",
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 500),
+                        child: ComparisonLister(
+                            generateComparisons(last30dayEmissions, 30))), ColorProvider(2)),
+
+                DataBox(
+                    "Tips & Tricks",
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 500),
+                        child: Text("lorem ipsum")), ColorProvider.white()),
+                
+                // padding
+                Container(height: 100,)
               ],
-            ),
+            )),
             Positioned(
                 bottom: 25,
                 left: 50,
                 right: 50,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 255, 37, 109), ),
                   onPressed: () {
                     startDailySurvey(context, user);
                   },
-                  child: const Text('Take your daily survey'),
+                  child: const Padding(
+                    padding: EdgeInsets.all(18.0),
+                    child: Text('Start daily survey', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                  ),
                 ))
           ],
         ));
@@ -65,7 +119,7 @@ class MainMenuView extends StatelessWidget {
 }
 
 void startDailySurvey(BuildContext context, UserAccount userAccount) {
-  List<SurveyQuestion> questions = generateDailySurveyQuestions();
+  List<SurveyQuestion> questions = dailySurveyQuestions;
 
   Navigator.push(
     context,
@@ -88,46 +142,139 @@ void startDailySurvey(BuildContext context, UserAccount userAccount) {
   );
 }
 
-LineChartData generateChartData() {
+LineChartData generateChartData(UserRecord record, int dayNumber) {
+  log("Generating chart data for day $dayNumber");
+
+  final int firstDayInPeriod = dayNumber - 29;
+  final spots = generateLineChartSpots(record, dayNumber, firstDayInPeriod);
+
+  late final double? minY;
+  late final double? maxY;
+
+  if (spots.length == 1) {
+    // Center the spot vertically on the cahrt
+    minY = spots[0].y / 2;
+    maxY = spots[0].y * 1.5;
+  } else {
+    minY = null;
+    maxY = null;
+  }
+
+  var fakeSpotAdded = false;
+  if (spots.length == 1 && spots[0].x > firstDayInPeriod.toDouble()) {
+    spots.add(FlSpot(firstDayInPeriod.toDouble(), spots[0].y));
+    fakeSpotAdded = true;
+  }
+
+  spots.sort((a, b) => a.x.compareTo(b.x));
+
   return LineChartData(
-    titlesData: FlTitlesData(
-      show: true,
-      rightTitles: AxisTitles(
-        sideTitles: SideTitles(showTitles: false),
-      ),
-      topTitles: AxisTitles(
-        sideTitles: SideTitles(showTitles: false),
-      ),
-      bottomTitles: AxisTitles(
-        sideTitles: SideTitles(
+      titlesData: FlTitlesData(
+        show: true,
+        rightTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        topTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
           showTitles: true,
-          interval: 1,
+          interval: 7,
+          getTitlesWidget: (value, meta) => value == meta.max
+              ? const SizedBox.shrink()
+              : Text(DateFormat("MM/dd").format(
+                  DateTime.fromMillisecondsSinceEpoch(
+                      value.toInt() * 86400000))),
+        )),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
         ),
       ),
-      leftTitles: AxisTitles(
-        sideTitles: SideTitles(showTitles: true, interval: 1),
-      ),
-    ),
-    lineBarsData: [
-      LineChartBarData(
-        spots: const [
-          FlSpot(0, 3),
-          FlSpot(2.6, 2),
-          FlSpot(4.9, 5),
-          FlSpot(6.8, 3.1),
-          FlSpot(8, 4),
-          FlSpot(9.5, 3),
-          FlSpot(11, 4),
-        ],
-        isCurved: true,
+      minY: minY,
+      maxY: maxY,
+      lineBarsData: [
+        LineChartBarData(
+            spots: spots,
+            isCurved: false,
+            color: Colors.red,
+            barWidth: 2,
+            isStrokeCapRound: true,
+            dotData: FlDotData(
+                show: true,
+                checkToShowDot: (spot, barData) =>
+                    !fakeSpotAdded || spot.x.floor() != firstDayInPeriod,
+                getDotPainter: (p0, p1, p2, p3) => FlDotCirclePainter(
+                      radius: 4,
+                      color: Colors.red,
+                      strokeWidth: 0,
+                      strokeColor: null,
+                    )),
+            belowBarData: BarAreaData(
+                show: true, color: const Color.fromARGB(50, 255, 0, 0))),
+      ],
+      lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+              getTooltipItems: (touchedSpots) => touchedSpots
+                  .map((e) =>
+                      LineTooltipItem("${e.y ~/ 1000} kg", const TextStyle()))
+                  .toList())));
+}
+
+List<FlSpot> generateLineChartSpots(
+    UserRecord record, int dayNumber, int firstDayInPeriod) {
+  List<FlSpot> spots = [];
+
+  for (DailyRecord dailyRecord in record.dailyRecords) {
+    if (dailyRecord.dayNumber >= firstDayInPeriod) {
+      spots.add(FlSpot(dailyRecord.dayNumber.toDouble(),
+          calculateDailyEmissions(record, dailyRecord).toDouble()));
+    }
+  }
+
+  return spots;
+}
+
+PieChartData generatePieChartData(Emissions periodEmissions) {
+  return PieChartData(
+    sectionsSpace: 0,
+    centerSpaceRadius: double.infinity,
+    sections: [
+      PieChartSectionData(
         color: Colors.red,
-        barWidth: 2,
-        isStrokeCapRound: true,
-        dotData: FlDotData(
-          show: false,
-        ),
-        belowBarData:
-            BarAreaData(show: true, color: const Color.fromARGB(50, 255, 0, 0)),
+        value: periodEmissions.transportation.toDouble(),
+        title: "Transport 🚗",
+        radius: 50,
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
+      ),
+      PieChartSectionData(
+        color: Colors.green,
+        value: periodEmissions.energy.toDouble(),
+        title: "Energy ⚡",
+        radius: 50,
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
+      ),
+      PieChartSectionData(
+        color: Colors.blue,
+        value: periodEmissions.other.toDouble(),
+        title: "Other 🛠",
+        radius: 50,
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
+      ),
+      PieChartSectionData(
+        color: Colors.yellow,
+        value: periodEmissions.food.toDouble(),
+        title: "Food 🍔",
+        radius: 50,
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
     ],
   );

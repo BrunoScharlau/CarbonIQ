@@ -1,36 +1,47 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'dart:convert';
 
 import 'generated_palettes.dart';
 import 'package:flutter/services.dart';
 
-// To avoid changes on re-draw, we will use the hash of the key of the view to indicate what palette will be chosen.
 class ColorProvider {
 
-  int index = 0;
+  int _index = 0;
   Map<ColorType, Color> palette = <ColorType, Color>{};
   Random random = Random();
 
-  ColorProvider (int newIndex){
-    index = newIndex % paletteCount();
-
-    palette[ColorType.background] = Color(palettes[index]["background"]!);
-    palette[ColorType.action] = Color(palettes[index]["action"]!);
-    palette[ColorType.primary] = Color(palettes[index]["primary"]!);
-    palette[ColorType.secondary] = Color(palettes[index]["secondary"]!);
+  ColorProvider (int newIndex) {
+    changePalette(newIndex);
   }
 
   ColorProvider.random(){
-    index = random.nextInt(paletteCount());
-
-    palette[ColorType.background] = Color(palettes[index]["background"]!);
-    palette[ColorType.action] = Color(palettes[index]["action"]!);
-    palette[ColorType.primary] = Color(palettes[index]["primary"]!);
-    palette[ColorType.secondary] = Color(palettes[index]["secondary"]!);
+    changePalette(random.nextInt(_paletteCount()));
   }
 
-  static int paletteCount () {
+  ColorProvider.white(){
+    _index = -1;
+
+    palette[ColorType.background] = Colors.white;
+    palette[ColorType.action] = Colors.black;
+    palette[ColorType.primary] = Colors.blue;
+    palette[ColorType.secondary] = Colors.grey;
+  }
+
+  void changePaletteWithOffset(int offset){
+    changePalette(_index + offset);
+  }
+
+  void changePalette(int newIndex){
+    _index = newIndex % _paletteCount();
+    debugPrint("The new paletteIndex is: $_index");
+
+    palette[ColorType.background] = Color(palettes[_index]["background"]!);
+    palette[ColorType.action] = Color(palettes[_index]["action"]!);
+    palette[ColorType.primary] = Color(palettes[_index]["primary"]!);
+    palette[ColorType.secondary] = Color(palettes[_index]["secondary"]!);
+  }
+
+  int _paletteCount () {
     return palettes.length;
   }
 
