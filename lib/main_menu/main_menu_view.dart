@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:gretapp/registration/user.dart';
+import 'package:gretapp/data/carbon.dart';
+import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_view.dart';
-import 'main_menu_widgets.dart';
+import 'package:gretapp/data/datetime.dart';
 import 'package:intl/intl.dart';
+import 'main_menu_widgets.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class MainMenuView extends StatelessWidget {
@@ -13,10 +17,14 @@ class MainMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("Building main menu view for user ${user.name}");
+
     var now = DateTime.now();
-    var formatter = DateFormat('MMMM');
-    String formatted = formatter.format(now);
-    final String month = formatted;
+
+    final UserRecord record = generateUserRecord(user);
+    final int dayNumber = getDayNumber(now);
+    final Emissions last30dayEmissions =
+        calculate30DayEmissions(record, dayNumber); // Divide by 1000 to get kg
 
     return Scaffold(
         appBar: AppBar(
@@ -39,24 +47,37 @@ class MainMenuView extends StatelessWidget {
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 32),
                     textAlign: TextAlign.center),
-                Text("here's what your impact for $month looks like",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20)),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                      "This is what your impact over the past 30 days looks like",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20)),
+                ),
                 DataBox(
-                    "How your emissions evolved this month",
-                    ConstrainedBox(
-                        constraints: const BoxConstraints(maxHeight: 150),
-                        child: LineChart(generateChartData()))),
+                    "How your emissions evolved during this period",
+                    Column(children: [
+                      ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 150),
+                          child:
+                              LineChart(generateChartData(record, dayNumber))),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                              "In total, you've emitted ${last30dayEmissions / 1000} KG of CO2 in the last 30 days")),
+                    ])),
                 DataBox(
                     "What makes up most of your carbon footprint",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 300),
-                        child: PieChart(generatePieChartData()))),
+                        child: PieChart(
+                            generatePieChartData(last30dayEmissions)))),
                 DataBox(
                     "What your impact compares to",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 500),
-                        child: ComparisonLister(generateComparisons())))
+                        child: ComparisonLister(
+                            generateComparisons(last30dayEmissions, 30))))
               ],
             ),
             Positioned(
@@ -75,7 +96,7 @@ class MainMenuView extends StatelessWidget {
 }
 
 void startDailySurvey(BuildContext context, UserAccount userAccount) {
-  List<SurveyQuestion> questions = generateDailySurveyQuestions();
+  List<SurveyQuestion> questions = dailySurveyQuestions;
 
   Navigator.push(
     context,
@@ -98,98 +119,140 @@ void startDailySurvey(BuildContext context, UserAccount userAccount) {
   );
 }
 
-LineChartData generateChartData() {
+LineChartData generateChartData(UserRecord record, int dayNumber) {
+  log("Generating chart data for day $dayNumber");
+
+  final int firstDayInPeriod = dayNumber - 29;
+  final spots = generateLineChartSpots(record, dayNumber, firstDayInPeriod);
+
+  late final double? minY;
+  late final double? maxY;
+
+  if (spots.length == 1) {
+    // Center the spot vertically on the cahrt
+    minY = spots[0].y / 2;
+    maxY = spots[0].y * 1.5;
+  } else {
+    minY = null;
+    maxY = null;
+  }
+
+  var fakeSpotAdded = false;
+  if (spots.length == 1 && spots[0].x > firstDayInPeriod.toDouble()) {
+    spots.add(FlSpot(firstDayInPeriod.toDouble(), spots[0].y));
+    fakeSpotAdded = true;
+  }
+
+  spots.sort((a, b) => a.x.compareTo(b.x));
+
   return LineChartData(
-    titlesData: FlTitlesData(
-      show: true,
-      rightTitles: AxisTitles(
-        sideTitles: SideTitles(showTitles: false),
-      ),
-      topTitles: AxisTitles(
-        sideTitles: SideTitles(showTitles: false),
-      ),
-      bottomTitles: AxisTitles(
-        sideTitles: SideTitles(
+      titlesData: FlTitlesData(
+        show: true,
+        rightTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
+        ),
+        topTitles: AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
+        bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
           showTitles: true,
-          interval: 1,
+          interval: 7,
+          getTitlesWidget: (value, meta) => value == meta.max
+              ? const SizedBox.shrink()
+              : Text(DateFormat("MM/dd").format(
+                  DateTime.fromMillisecondsSinceEpoch(
+                      value.toInt() * 86400000))),
+        )),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: false,
+          ),
         ),
       ),
-      leftTitles: AxisTitles(
-        sideTitles: SideTitles(showTitles: true, interval: 1),
-      ),
-    ),
-    lineBarsData: [
-      LineChartBarData(
-        spots: const [
-          FlSpot(0, 3),
-          FlSpot(2.6, 2),
-          FlSpot(4.9, 5),
-          FlSpot(6.8, 3.1),
-          FlSpot(8, 4),
-          FlSpot(9.5, 3),
-          FlSpot(11, 4),
-        ],
-        isCurved: true,
-        color: Colors.red,
-        barWidth: 2,
-        isStrokeCapRound: true,
-        dotData: FlDotData(
-          show: false,
-        ),
-        belowBarData:
-            BarAreaData(show: true, color: const Color.fromARGB(50, 255, 0, 0)),
-      ),
-    ],
-  );
+      minY: minY,
+      maxY: maxY,
+      lineBarsData: [
+        LineChartBarData(
+            spots: spots,
+            isCurved: false,
+            color: Colors.red,
+            barWidth: 2,
+            isStrokeCapRound: true,
+            dotData: FlDotData(
+                show: true,
+                checkToShowDot: (spot, barData) =>
+                    !fakeSpotAdded || spot.x.floor() != firstDayInPeriod,
+                getDotPainter: (p0, p1, p2, p3) => FlDotCirclePainter(
+                      radius: 4,
+                      color: Colors.red,
+                      strokeWidth: 0,
+                      strokeColor: null,
+                    )),
+            belowBarData: BarAreaData(
+                show: true, color: const Color.fromARGB(50, 255, 0, 0))),
+      ],
+      lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+              getTooltipItems: (touchedSpots) => touchedSpots
+                  .map((e) =>
+                      LineTooltipItem("${e.y ~/ 1000} kg", const TextStyle()))
+                  .toList())));
 }
 
-PieChartData generatePieChartData() {
+List<FlSpot> generateLineChartSpots(
+    UserRecord record, int dayNumber, int firstDayInPeriod) {
+  List<FlSpot> spots = [];
+
+  for (DailyRecord dailyRecord in record.dailyRecords) {
+    if (dailyRecord.dayNumber >= firstDayInPeriod) {
+      spots.add(FlSpot(dailyRecord.dayNumber.toDouble(),
+          calculateDailyEmissions(record, dailyRecord).toDouble()));
+    }
+  }
+
+  return spots;
+}
+
+PieChartData generatePieChartData(Emissions periodEmissions) {
   return PieChartData(
     sectionsSpace: 0,
     centerSpaceRadius: double.infinity,
     sections: [
       PieChartSectionData(
         color: Colors.red,
-        value: 25,
-        title: "25% Transport 🚗",
+        value: periodEmissions.transportation.toDouble(),
+        title: "Transport 🚗",
         radius: 50,
         titleStyle: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       PieChartSectionData(
         color: Colors.green,
-        value: 15,
-        title: "15% Energy ⚡",
+        value: periodEmissions.energy.toDouble(),
+        title: "Energy ⚡",
         radius: 50,
         titleStyle: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       PieChartSectionData(
         color: Colors.blue,
-        value: 10,
-        title: "10% Waste 🗑",
+        value: periodEmissions.other.toDouble(),
+        title: "Other 🛠",
         radius: 50,
         titleStyle: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       PieChartSectionData(
         color: Colors.yellow,
-        value: 40,
-        title: "40% Food 🍔",
+        value: periodEmissions.food.toDouble(),
+        title: "Food 🍔",
         radius: 50,
         titleStyle: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
       ),
     ],
   );
-}
-
-List<Comparison> generateComparisons() {
-  return [
-    const Comparison("trees", '500', '🌳', Colors.green),
-    const Comparison(
-        "of average emissions per person", '5.2x', '👨', Colors.red),
-    const Comparison("earths required if everyone lived like you", '1.2x', '🌍',
-        Colors.blue),
-  ];
 }
