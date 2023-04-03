@@ -18,6 +18,15 @@ class ColorProvider {
     changePalette(random.nextInt(_paletteCount()));
   }
 
+  ColorProvider.white(){
+    _index = -1;
+
+    palette[ColorType.background] = Colors.white;
+    palette[ColorType.action] = Colors.black;
+    palette[ColorType.primary] = Colors.blue;
+    palette[ColorType.secondary] = Colors.grey;
+  }
+
   void changePaletteWithOffset(int offset){
     changePalette(_index + offset);
   }

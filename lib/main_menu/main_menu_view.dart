@@ -87,7 +87,16 @@ class MainMenuView extends StatelessWidget {
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 500),
                         child: ComparisonLister(
-                            generateComparisons(last30dayEmissions, 30))), ColorProvider(2))
+                            generateComparisons(last30dayEmissions, 30))), ColorProvider(2)),
+
+                DataBox(
+                    "Tips & Tricks",
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 500),
+                        child: Text("lorem ipsum")), ColorProvider.white()),
+                
+                // padding
+                Container(height: 100,)
               ],
             )),
             Positioned(

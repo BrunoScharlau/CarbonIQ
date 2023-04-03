@@ -24,7 +24,7 @@ class DataBox extends StatelessWidget {
       child: Column(
         children: [
           Text(title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: _colorProvider.getColor(ColorType.action)),
               textAlign: TextAlign.center),
           const Padding(padding: EdgeInsets.all(10)),
           child
@@ -43,6 +43,8 @@ class ComparisonLister extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.count(
         crossAxisCount: 2,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
         children: comparisons
             .map((comparison) => Padding(
                   padding: const EdgeInsets.all(16.0),
