@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -86,14 +88,14 @@ class TextAnswerInputWidget extends StatelessWidget
   }
 }
 
-/// A widget that displays a number input field
-class NumberAnswerInputWidget extends StatelessWidget
+/// A widget that displays a number input field accepting only integers
+class IntegerAnswerInputWidget extends StatelessWidget
     implements AnswerInputWidget<int> {
   @override
   final ValueNotifier<bool> hasInput = ValueNotifier<bool>(false);
   final TextEditingController editingController = TextEditingController();
 
-  NumberAnswerInputWidget({super.key}) {
+  IntegerAnswerInputWidget({super.key}) {
     editingController.addListener(() {
       hasInput.value = editingController.value.text.isNotEmpty;
     });
@@ -105,7 +107,13 @@ class NumberAnswerInputWidget extends StatelessWidget
 
   @override
   int getInput() {
-    return int.parse(editingController.value.text);
+    try {
+      return int.parse(editingController.value.text);
+    } catch (e) {
+      log("Failed to parse input as integer");
+      log(e.toString());
+      return 0;
+    }
   }
 
   @override
@@ -113,8 +121,52 @@ class NumberAnswerInputWidget extends StatelessWidget
     return TextField(
         controller: editingController,
         autofocus: true,
-        keyboardType: TextInputType.number,
+        keyboardType: const TextInputType.numberWithOptions(
+            decimal: false, signed: false),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly]);
+  }
+}
+
+/// A widget that displays a number input field accepting doubles
+class DoubleAnswerInputWidget extends StatelessWidget
+    implements AnswerInputWidget<double> {
+  @override
+  final ValueNotifier<bool> hasInput = ValueNotifier<bool>(false);
+  final TextEditingController editingController = TextEditingController();
+
+  DoubleAnswerInputWidget({super.key}) {
+    editingController.addListener(() {
+      hasInput.value = editingController.value.text.isNotEmpty &&
+          editingController.value.text != "." &&
+          '.'.allMatches(editingController.value.text).length <= 1;
+    });
+  }
+
+  destructor() {
+    editingController.dispose();
+  }
+
+  @override
+  double getInput() {
+    try {
+      return double.parse(editingController.value.text);
+    } catch (e) {
+      log("Failed to parse input as double");
+      log(e.toString());
+      return 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+        controller: editingController,
+        autofocus: true,
+        keyboardType:
+            const TextInputType.numberWithOptions(decimal: true, signed: false),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+        ]);
   }
 }
 
@@ -132,6 +184,11 @@ class MultipleChoiceOption {
 
   @override
   int get hashCode => identifier.hashCode;
+
+  @override
+  String toString() {
+    return identifier;
+  }
 }
 
 /// A widget that displays a multiple choice question in the form of a list of radio buttons. It is stateful because it needs to keep track of which radio button is selected.
@@ -181,9 +238,12 @@ class _MultipleChoiceAnswerInputWidgetState
 // Answer widget generators
 TextAnswerInputWidget newTextAnswerWidget(Map<String, dynamic>? parameters) =>
     TextAnswerInputWidget();
-NumberAnswerInputWidget newNumberAnswerWidget(
+IntegerAnswerInputWidget newIntegerAnswerWidget(
         Map<String, dynamic>? parameters) =>
-    NumberAnswerInputWidget();
+    IntegerAnswerInputWidget();
+DoubleAnswerInputWidget newDoubleAnswerWidget(
+        Map<String, dynamic>? parameters) =>
+    DoubleAnswerInputWidget();
 MultipleChoiceAnswerInputWidget newMultipleChoiceAnswerWidget(
         Map<String, dynamic>? parameters) =>
     MultipleChoiceAnswerInputWidget(parameters == null
