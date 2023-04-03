@@ -9,6 +9,7 @@ import 'package:gretapp/data/datetime.dart';
 import 'package:intl/intl.dart';
 import 'main_menu_widgets.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:gretapp/epicos/color_provider.dart';
 
 class MainMenuView extends StatelessWidget {
   final UserAccount user;
@@ -41,7 +42,16 @@ class MainMenuView extends StatelessWidget {
         ),
         body: Stack(
           children: [
-            ListView(
+            ShaderMask(
+              shaderCallback: (rect) {
+              return LinearGradient(
+                begin: Alignment.center.add(Alignment(0, .6)),
+                end: Alignment.bottomCenter.add(Alignment(0, -.25)),
+                colors: [Colors.white, Colors.transparent],
+              ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
+            },
+            blendMode: BlendMode.dstIn,
+              child: ListView(
               children: [
                 Text("Hi ${user.name},",
                     style: const TextStyle(
@@ -65,30 +75,43 @@ class MainMenuView extends StatelessWidget {
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
                               "In total, you've emitted ${last30dayEmissions / 1000} KG of CO2 in the last 30 days")),
-                    ])),
+                    ]), ColorProvider(0)),
                 DataBox(
                     "What makes up most of your carbon footprint",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 300),
                         child: PieChart(
-                            generatePieChartData(last30dayEmissions)))),
+                            generatePieChartData(last30dayEmissions))), ColorProvider(1)),
                 DataBox(
                     "What your impact compares to",
                     ConstrainedBox(
                         constraints: const BoxConstraints(maxHeight: 500),
                         child: ComparisonLister(
-                            generateComparisons(last30dayEmissions, 30))))
+                            generateComparisons(last30dayEmissions, 30))), ColorProvider(2)),
+
+                DataBox(
+                    "Tips & Tricks",
+                    ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 500),
+                        child: Text("lorem ipsum")), ColorProvider.white()),
+                
+                // padding
+                Container(height: 100,)
               ],
-            ),
+            )),
             Positioned(
                 bottom: 25,
                 left: 50,
                 right: 50,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 255, 37, 109), ),
                   onPressed: () {
                     startDailySurvey(context, user);
                   },
-                  child: const Text('Take your daily survey'),
+                  child: const Padding(
+                    padding: EdgeInsets.all(18.0),
+                    child: Text('Start daily survey', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                  ),
                 ))
           ],
         ));
@@ -226,32 +249,32 @@ PieChartData generatePieChartData(Emissions periodEmissions) {
         value: periodEmissions.transportation.toDouble(),
         title: "Transport 🚗",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
       PieChartSectionData(
         color: Colors.green,
         value: periodEmissions.energy.toDouble(),
         title: "Energy ⚡",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
       PieChartSectionData(
         color: Colors.blue,
         value: periodEmissions.other.toDouble(),
         title: "Other 🛠",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
       PieChartSectionData(
         color: Colors.yellow,
         value: periodEmissions.food.toDouble(),
         title: "Food 🍔",
         radius: 50,
-        titleStyle: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        titleStyle: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black.withAlpha(128)),
       ),
     ],
   );
