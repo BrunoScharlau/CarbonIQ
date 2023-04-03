@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gretapp/main_menu/main_menu_view.dart';
-import 'package:gretapp/registration/user.dart';
+import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 import 'package:gretapp/survey/survey_questions.dart';

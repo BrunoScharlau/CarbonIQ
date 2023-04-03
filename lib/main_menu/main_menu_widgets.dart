@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gretapp/data/carbon.dart';
 
 class DataBox extends StatelessWidget {
   final String title;
@@ -26,15 +27,6 @@ class DataBox extends StatelessWidget {
       ),
     );
   }
-}
-
-class Comparison {
-  final String name;
-  final String value;
-  final String emoji;
-  final Color color;
-
-  const Comparison(this.name, this.value, this.emoji, this.color);
 }
 
 class ComparisonLister extends StatelessWidget {

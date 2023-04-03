@@ -1,4 +1,5 @@
 import 'package:gretapp/data/carbon.dart';
+import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
 
 class SurveyQuestion<T> {
@@ -48,7 +49,7 @@ final locationQuestion = SurveyQuestion(
     });
 
 final householdTypeQuestion = SurveyQuestion(
-    "What type of household do you live in?",
+    "What type of building do you live in?",
     'householdType',
     newMultipleChoiceAnswerWidget,
     parameters: {
@@ -58,12 +59,17 @@ final householdTypeQuestion = SurveyQuestion(
         MultipleChoiceOption(
             "Family detached 🏡", HouseholdType.familyDetached.name),
         MultipleChoiceOption(
-            "Appartments 2-4 🏢", HouseholdType.appartments24.name),
+            "Appartments 2-4 units 🏢", HouseholdType.appartments24.name),
         MultipleChoiceOption(
-            "Appartments 5+ 🏢", HouseholdType.appartments5p.name),
+            "Appartments 5+ units 🏢", HouseholdType.appartments5p.name),
         MultipleChoiceOption("Mobile home 🏠", HouseholdType.mobileHome.name)
       ]
     });
+
+const householdInhabitantCountQuestion = SurveyQuestion(
+    "How many people live in your household?",
+    'householdInhabitantCount',
+    newNumberAnswerWidget);
 
 final carTypeQuestion = SurveyQuestion(
     "What type of car do you drive?", 'carType', newMultipleChoiceAnswerWidget,
@@ -124,6 +130,7 @@ const coffeeMassQuestion = SurveyQuestion(
 final List<SurveyQuestion> registrationQuestions = [
   nameQuestion,
   locationQuestion,
+  householdInhabitantCountQuestion,
   householdTypeQuestion,
   carTypeQuestion
 ];
