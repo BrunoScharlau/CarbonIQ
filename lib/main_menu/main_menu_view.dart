@@ -144,12 +144,15 @@ void startDailySurvey(BuildContext context, UserAccount userAccount) {
 
                 userAccount.completedSurveys.add(session);
 
-                log('Saving account...');
-                SharedPreferences.getInstance()
-                    .then((prefs) => saveAccount(userAccount, prefs)
-                        .then((value) => log('Saved account.')))
-                    .catchError((e) =>
-                        log('Error saving account: ${e.toString()}', error: e));
+                if (!userAccount.dontSave) {
+                  log('Saving account...');
+                  SharedPreferences.getInstance()
+                      .then((prefs) => saveAccount(userAccount, prefs)
+                          .then((value) => log('Saved account.')))
+                      .catchError((e) => log(
+                          'Error saving account: ${e.toString()}',
+                          error: e));
+                }
 
                 Navigator.pushAndRemoveUntil(
                   context,
