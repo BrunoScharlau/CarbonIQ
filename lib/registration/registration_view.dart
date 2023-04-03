@@ -44,14 +44,19 @@ class RegistrationView extends StatelessWidget {
                                       answers[nameQuestion],
                                       SurveySession(DateTime.now(), answers),
                                       []);
-                                  log('Saving new account...');
-                                  SharedPreferences.getInstance()
-                                      .then((prefs) =>
-                                          saveAccount(account, prefs).then(
-                                              (value) => log('Saved account.')))
-                                      .catchError((e) => log(
-                                          'Error saving account: ${e.toString()}',
-                                          error: e));
+
+                                  if (!account.dontSave) {
+                                    log('Saving new account...');
+                                    SharedPreferences.getInstance()
+                                        .then((prefs) =>
+                                            saveAccount(account, prefs).then(
+                                                (value) =>
+                                                    log('Saved account.')))
+                                        .catchError((e) => log(
+                                            'Error saving account: ${e.toString()}',
+                                            error: e));
+                                  }
+
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
