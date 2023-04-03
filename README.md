@@ -1,7 +1,6 @@
-# gretapp
+# CarbonIQ
 
 The Flutter project for our Google Solutions Challenge submission.
-*Gretapp is the project's codename as we don't have a final name for the app yet*
 
 ## Project structure
 
