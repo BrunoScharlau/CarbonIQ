@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/main_menu/main_menu_view.dart';
+import 'package:gretapp/registration/account_loading_view.dart';
 import 'package:gretapp/registration/registration_view.dart';
 import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_questions.dart';
@@ -19,6 +19,16 @@ class DebugMenuView extends StatelessWidget {
       body: ListView(
         children: [
           const Padding(padding: EdgeInsets.only(top: 20)),
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AccountLoadingView()),
+                    (r) => false // Clear entire navigator stack
+                    );
+              },
+              child: const Text("Load saved account")),
           const SimulatedUserButton.newAccount(),
           SimulatedUserButton(
               UserAccount(
@@ -85,14 +95,14 @@ class SimulatedUserButton extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (context) => const RegistrationView()),
-                (r) => false // Clear everything
+                (r) => false // Clear entire navigator stack
                 );
           } else {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
                     builder: (context) => MainMenuView(userAccount!)),
-                (r) => false // Clear everything
+                (r) => false // Clear entire navigator stack
                 );
           }
         },

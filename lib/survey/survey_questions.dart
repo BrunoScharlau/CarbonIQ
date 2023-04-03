@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
@@ -30,6 +32,27 @@ class SurveySession {
   final Map<SurveyQuestion, dynamic> answers;
 
   SurveySession(this.time, this.answers);
+
+  String toJSON() {
+    return jsonEncode({
+      "time": time.millisecondsSinceEpoch,
+      "answers": answers.map((key, value) => MapEntry(key.identifier, value))
+    });
+  }
+
+  static SurveySession fromJSON(String jsonStr) {
+    final json = jsonDecode(jsonStr);
+    return SurveySession(
+        DateTime.fromMillisecondsSinceEpoch(json["time"]),
+        json["answers"].map(
+            (key, value) => MapEntry(getQuestionFromIdentifier(key), value)));
+  }
+}
+
+SurveyQuestion getQuestionFromIdentifier(String identifier) {
+  return registrationQuestions
+      .followedBy(dailySurveyQuestions)
+      .firstWhere((element) => element.identifier == identifier);
 }
 
 // Registration questions
