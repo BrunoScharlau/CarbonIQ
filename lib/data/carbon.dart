@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:gretapp/data/user.dart';
 import 'package:gretapp/data/datetime.dart';
@@ -17,6 +19,8 @@ class Emissions {
       this.other = 0});
 
   int get total => transportation + food + energy + other;
+
+  int get maxCategory => max(transportation, max(food, max(energy, other)));
 
   toInt() => total;
 
