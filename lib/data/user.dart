@@ -8,8 +8,10 @@ class UserAccount {
   final List<SurveySession> completedSurveys;
   final bool dontSave; // Used to prevent saving demo/debug accounts
 
+  DateTime? lastDailySurveyTime;
+
   UserAccount(this.name, this.signupSurvey, this.completedSurveys,
-      {this.dontSave = false});
+      {this.dontSave = false, this.lastDailySurveyTime});
 }
 
 enum CommuteMethod { car, motorbike, bus, train, bike, walk }
@@ -34,8 +36,7 @@ class Diet {
   final double cheeseMass;
   final double coffeeMass;
 
-  double get totalMeatMass =>
-      beefMass + lambPorkChickenMass;
+  double get totalMeatMass => beefMass + lambPorkChickenMass;
 
   Diet(this.beefMass, this.lambPorkChickenMass, this.chocolateMass,
       this.cheeseMass, this.coffeeMass);
@@ -98,6 +99,12 @@ UserRecord generateUserRecord(UserAccount user) {
 saveAccount(UserAccount account, SharedPreferences prefs) async {
   await prefs.setString('save_version', '1.0.0');
   await prefs.setString('user.name', account.name);
+
+  if (account.lastDailySurveyTime != null) {
+    await prefs.setInt('user.last_daily_survey_time',
+        account.lastDailySurveyTime!.millisecondsSinceEpoch);
+  }
+
   await prefs.setString('user.signup_survey', account.signupSurvey.toJSON());
   await prefs.setStringList('user.completed_surveys',
       account.completedSurveys.map((survey) => survey.toJSON()).toList());
@@ -106,6 +113,13 @@ saveAccount(UserAccount account, SharedPreferences prefs) async {
 Future<UserAccount?> loadAccount(SharedPreferences prefs) async {
   if (prefs.containsKey('user.name')) {
     String name = prefs.getString('user.name')!;
+
+    DateTime? lastDailySurveyTime;
+    if (prefs.containsKey('user.last_daily_survey_time')) {
+      lastDailySurveyTime = DateTime.fromMillisecondsSinceEpoch(
+          prefs.getInt('user.last_daily_survey_time')!);
+    }
+
     SurveySession signupSurvey =
         SurveySession.fromJSON(prefs.getString('user.signup_survey')!);
     List<SurveySession> completedSurveys = prefs
@@ -113,7 +127,8 @@ Future<UserAccount?> loadAccount(SharedPreferences prefs) async {
         .map((json) => SurveySession.fromJSON(json))
         .toList();
 
-    return UserAccount(name, signupSurvey, completedSurveys);
+    return UserAccount(name, signupSurvey, completedSurveys,
+        lastDailySurveyTime: lastDailySurveyTime);
   } else {
     return null;
   }

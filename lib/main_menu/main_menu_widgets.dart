@@ -1,11 +1,16 @@
 import 'dart:developer';
 
 import 'package:fl_chart/fl_chart.dart';
+import 'package:gretapp/data/datetime.dart';
+import 'package:gretapp/main_menu/main_menu_view.dart';
+import 'package:gretapp/survey/survey_questions.dart';
+import 'package:gretapp/survey/survey_view.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:gretapp/data/user.dart';
 import 'package:gretapp/epicos/color_provider.dart';
 import 'package:gretapp/data/carbon.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DataBox extends StatelessWidget {
   final String title;
@@ -87,6 +92,52 @@ class ComparisonLister extends StatelessWidget {
                   ),
                 ))
             .toList());
+  }
+}
+
+class DailySurveyButton extends StatefulWidget {
+  final UserAccount user;
+  final DateTime now;
+
+  const DailySurveyButton(this.user, this.now, {super.key});
+
+  @override
+  State<DailySurveyButton> createState() => _DailySurveyButtonState();
+}
+
+class _DailySurveyButtonState extends State<DailySurveyButton> {
+  bool enabled = false;
+
+  @override
+  void initState() {
+    enabled = widget.user.lastDailySurveyTime == null ||
+        getDayNumber(widget.now) >
+            getDayNumber(widget.user.lastDailySurveyTime!);
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: enabled
+            ? const Color.fromARGB(255, 255, 37, 109)
+            : const Color.fromARGB(255, 133, 107, 115),
+      ),
+      onPressed: () {
+        if (!enabled) return;
+
+        startDailySurvey(context, widget.user);
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Text(
+          enabled ? 'Take daily survey' : 'Come back tomorrow!',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+      ),
+    );
   }
 }
 
@@ -320,5 +371,40 @@ PieChartData generatePieChartData(Emissions periodEmissions) {
             color: Colors.black.withAlpha(128)),
       ),
     ],
+  );
+}
+
+void startDailySurvey(BuildContext context, UserAccount userAccount) {
+  List<SurveyQuestion> questions = dailySurveyQuestions;
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+        builder: (context) => SurveyView(
+              questions,
+              (answers) {
+                SurveySession session = SurveySession(DateTime.now(), answers);
+
+                userAccount.completedSurveys.add(session);
+                userAccount.lastDailySurveyTime = DateTime.now();
+
+                if (!userAccount.dontSave) {
+                  log('Saving account...');
+                  SharedPreferences.getInstance()
+                      .then((prefs) => saveAccount(userAccount, prefs)
+                          .then((value) => log('Saved account.')))
+                      .catchError((e) => log(
+                          'Error saving account: ${e.toString()}',
+                          error: e));
+                }
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MainMenuView(userAccount)),
+                  (r) => false, // Clear everything
+                );
+              },
+            )),
   );
 }
