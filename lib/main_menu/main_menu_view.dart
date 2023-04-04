@@ -77,7 +77,7 @@ class MainMenuView extends StatelessWidget {
                         ColorProvider.white()),
 
                     // padding
-                    Container(
+                    const SizedBox(
                       height: 120,
                     )
                   ],
@@ -145,23 +145,24 @@ String generateTip(UserAccount account, Emissions last30dayEmissions) {
   if (account.completedSurveys.isEmpty) {
     return "You haven't completed any surveys yet. Complete one to get started!";
   } else {
-    final int yearlyEmissions =
-      (last30dayEmissions.total / 30 * 365).floor();
-    
+    final int yearlyEmissions = (last30dayEmissions.total / 30 * 365).floor();
+
     math.Random rng = math.Random();
 
     if (yearlyEmissions < 2500000) {
       return "Congratulations! Your lifestyle is sustainable! You should be the one giving advice to others.";
     } else if (yearlyEmissions < 4700000 && rng.nextDouble() < 0.5) {
-        return "Nice, your yearly emissions are less than average! Keep it up!";
+      return "Nice, your yearly emissions are less than average! Keep it up!";
     }
 
     if (rng.nextDouble() < 0.8) {
       if (last30dayEmissions.maxCategory == last30dayEmissions.energy) {
         return "Your biggest impact is from household energy consumption. Heating and AC are very energy intensive. Consider turning them down a bit.";
-      } else if (last30dayEmissions.maxCategory == last30dayEmissions.food && getLatestDiet(account).totalMeatMass > 0) {
+      } else if (last30dayEmissions.maxCategory == last30dayEmissions.food &&
+          getLatestDiet(account).totalMeatMass > 0) {
         return "Your biggest impact is from food. Consider reducing your meat consumption.";
-      } else if (last30dayEmissions.maxCategory == last30dayEmissions.transportation) {
+      } else if (last30dayEmissions.maxCategory ==
+          last30dayEmissions.transportation) {
         return "Your biggest impact is from transport. Try to reduce your transport emissions by walking or cycling more often, or taking advantage of public transport.";
       }
     }
