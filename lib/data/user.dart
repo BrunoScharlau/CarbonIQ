@@ -34,6 +34,9 @@ class Diet {
   final double cheeseMass;
   final double coffeeMass;
 
+  double get totalMeatMass =>
+      beefMass + lambPorkChickenMass;
+
   Diet(this.beefMass, this.lambPorkChickenMass, this.chocolateMass,
       this.cheeseMass, this.coffeeMass);
 }

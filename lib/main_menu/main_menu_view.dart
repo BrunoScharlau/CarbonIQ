@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:gretapp/data/carbon.dart';
@@ -65,44 +66,19 @@ class MainMenuView extends StatelessWidget {
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 20)),
                     ),
-                    DataBox(
-                        "How your emissions evolved during this period",
-                        Column(children: [
-                          ConstrainedBox(
-                              constraints: const BoxConstraints(maxHeight: 150),
-                              child: LineChart(
-                                  generateChartData(record, dayNumber))),
-                          Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                  "In total, you've emitted ${last30dayEmissions / 1000} KG of CO2 in the last 30 days")),
-                        ]),
-                        ColorProvider(0)),
-                    DataBox(
-                        "What makes up most of your carbon footprint",
-                        ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 300),
-                            child: PieChart(
-                                generatePieChartData(last30dayEmissions))),
-                        ColorProvider(1)),
-                    DataBox(
-                        "What your impact compares to",
-                        ConstrainedBox(
-                            constraints: const BoxConstraints(maxHeight: 500),
-                            child: ComparisonLister(
-                                generateComparisons(last30dayEmissions, 30))),
-                        ColorProvider(2)),
-
+                    EmissionsGraph(record, dayNumber, last30dayEmissions),
+                    EmissionsPieChart(record, last30dayEmissions),
+                    EmissionsComparisons(record, last30dayEmissions),
                     DataBox(
                         "Tips & Tricks",
                         ConstrainedBox(
                             constraints: const BoxConstraints(maxHeight: 500),
-                            child: Text("lorem ipsum")),
+                            child: Text(generateTip(user, last30dayEmissions))),
                         ColorProvider.white()),
 
                     // padding
-                    Container(
-                      height: 100,
+                    const SizedBox(
+                      height: 120,
                     )
                   ],
                 )),
@@ -165,148 +141,32 @@ void startDailySurvey(BuildContext context, UserAccount userAccount) {
   );
 }
 
-LineChartData generateChartData(UserRecord record, int dayNumber) {
-  log("Generating chart data for day $dayNumber");
-
-  final int firstDayInPeriod = dayNumber - 29;
-  final spots = generateLineChartSpots(record, dayNumber, firstDayInPeriod);
-
-  late final double? minY;
-  late final double? maxY;
-
-  if (spots.length == 1) {
-    // Center the spot vertically on the cahrt
-    minY = spots[0].y / 2;
-    maxY = spots[0].y * 1.5;
+String generateTip(UserAccount account, Emissions last30dayEmissions) {
+  if (account.completedSurveys.isEmpty) {
+    return "You haven't completed any surveys yet. Complete one to get started!";
   } else {
-    minY = null;
-    maxY = null;
-  }
+    final int yearlyEmissions = (last30dayEmissions.total / 30 * 365).floor();
 
-  var fakeSpotAdded = false;
-  if (spots.length == 1 && spots[0].x > firstDayInPeriod.toDouble()) {
-    spots.add(FlSpot(firstDayInPeriod.toDouble(), spots[0].y));
-    fakeSpotAdded = true;
-  }
+    math.Random rng = math.Random();
 
-  spots.sort((a, b) => a.x.compareTo(b.x));
-
-  return LineChartData(
-      titlesData: FlTitlesData(
-        show: true,
-        rightTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: false,
-          ),
-        ),
-        topTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-          showTitles: true,
-          interval: 7,
-          getTitlesWidget: (value, meta) => value == meta.max
-              ? const SizedBox.shrink()
-              : Text(DateFormat("MM/dd").format(
-                  DateTime.fromMillisecondsSinceEpoch(
-                      value.toInt() * 86400000))),
-        )),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: false,
-          ),
-        ),
-      ),
-      minY: minY,
-      maxY: maxY,
-      lineBarsData: [
-        LineChartBarData(
-            spots: spots,
-            isCurved: false,
-            color: Colors.red,
-            barWidth: 2,
-            isStrokeCapRound: true,
-            dotData: FlDotData(
-                show: true,
-                checkToShowDot: (spot, barData) =>
-                    !fakeSpotAdded || spot.x.floor() != firstDayInPeriod,
-                getDotPainter: (p0, p1, p2, p3) => FlDotCirclePainter(
-                      radius: 4,
-                      color: Colors.red,
-                      strokeWidth: 0,
-                      strokeColor: null,
-                    )),
-            belowBarData: BarAreaData(
-                show: true, color: const Color.fromARGB(50, 255, 0, 0))),
-      ],
-      lineTouchData: LineTouchData(
-          touchTooltipData: LineTouchTooltipData(
-              getTooltipItems: (touchedSpots) => touchedSpots
-                  .map((e) =>
-                      LineTooltipItem("${e.y ~/ 1000} kg", const TextStyle()))
-                  .toList())));
-}
-
-List<FlSpot> generateLineChartSpots(
-    UserRecord record, int dayNumber, int firstDayInPeriod) {
-  List<FlSpot> spots = [];
-
-  for (DailyRecord dailyRecord in record.dailyRecords) {
-    if (dailyRecord.dayNumber >= firstDayInPeriod) {
-      spots.add(FlSpot(dailyRecord.dayNumber.toDouble(),
-          calculateDailyEmissions(record, dailyRecord).toDouble()));
+    if (yearlyEmissions < 2500000) {
+      return "Congratulations! Your lifestyle is sustainable! You should be the one giving advice to others.";
+    } else if (yearlyEmissions < 4700000 && rng.nextDouble() < 0.5) {
+      return "Nice, your yearly emissions are less than average! Keep it up!";
     }
+
+    if (rng.nextDouble() < 0.8) {
+      if (last30dayEmissions.maxCategory == last30dayEmissions.energy) {
+        return "Your biggest impact is from household energy consumption. Heating and AC are very energy intensive. Consider turning them down a bit.";
+      } else if (last30dayEmissions.maxCategory == last30dayEmissions.food &&
+          getLatestDiet(account).totalMeatMass > 0) {
+        return "Your biggest impact is from food. Consider reducing your meat consumption.";
+      } else if (last30dayEmissions.maxCategory ==
+          last30dayEmissions.transportation) {
+        return "Your biggest impact is from transport. Try to reduce your transport emissions by walking or cycling more often, or taking advantage of public transport.";
+      }
+    }
+
+    return "Remember that every little step towards reducing your impact counts! Why don't you set yourself a goal of ${(last30dayEmissions / 10150).total * 10} KG of CO2 emitted for next month?";
   }
-
-  return spots;
-}
-
-PieChartData generatePieChartData(Emissions periodEmissions) {
-  return PieChartData(
-    sectionsSpace: 0,
-    centerSpaceRadius: double.infinity,
-    sections: [
-      PieChartSectionData(
-        color: Colors.red,
-        value: periodEmissions.transportation.toDouble(),
-        title: "Transport 🚗",
-        radius: 50,
-        titleStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black.withAlpha(128)),
-      ),
-      PieChartSectionData(
-        color: Colors.green,
-        value: periodEmissions.energy.toDouble(),
-        title: "Energy ⚡",
-        radius: 50,
-        titleStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black.withAlpha(128)),
-      ),
-      PieChartSectionData(
-        color: Colors.blue,
-        value: periodEmissions.other.toDouble(),
-        title: "Other 🛠",
-        radius: 50,
-        titleStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black.withAlpha(128)),
-      ),
-      PieChartSectionData(
-        color: Colors.yellow,
-        value: periodEmissions.food.toDouble(),
-        title: "Food 🍔",
-        radius: 50,
-        titleStyle: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.black.withAlpha(128)),
-      ),
-    ],
-  );
 }
