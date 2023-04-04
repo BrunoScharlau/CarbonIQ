@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gretapp/debug_menu/debug_menu_view.dart';
-import 'package:gretapp/registration/registration_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Unnamed App',
+      title: 'CarbonIQ',
       theme: ThemeData(
         // This is the theme of your application.
         //
