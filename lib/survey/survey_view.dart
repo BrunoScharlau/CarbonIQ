@@ -50,7 +50,7 @@ class _SurveyViewState extends State<SurveyView> {
           ),
           backgroundColor: colorProvider.getColor(ColorType.background),
           body: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
             child: ListView(
               children: [
                 Text("Question ${questionIndex + 1}/${widget.questions.length}",
