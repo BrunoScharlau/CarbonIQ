@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
-import 'package:gretapp/epicos/color_provider.dart';
+import 'package:gretapp/colors/color_provider.dart';
 
 class SurveyView extends StatefulWidget {
   final List<SurveyQuestion> questions;
