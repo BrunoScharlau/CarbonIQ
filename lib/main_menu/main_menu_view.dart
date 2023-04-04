@@ -4,12 +4,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/data/user.dart';
-import 'package:gretapp/survey/survey_questions.dart';
-import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/data/datetime.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'main_menu_widgets.dart';
-import 'package:gretapp/epicos/color_provider.dart';
+import 'package:gretapp/colors/color_provider.dart';
 
 class MainMenuView extends StatelessWidget {
   final UserAccount user;
@@ -31,7 +28,9 @@ class MainMenuView extends StatelessWidget {
         appBar: AppBar(
           actions: [
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showSettingsDialog(context, user);
+                },
                 icon: const Icon(
                   Icons.settings,
                   color: Colors.grey,
@@ -84,59 +83,10 @@ class MainMenuView extends StatelessWidget {
                 bottom: 25,
                 left: 50,
                 right: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 255, 37, 109),
-                  ),
-                  onPressed: () {
-                    startDailySurvey(context, user);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.all(18.0),
-                    child: Text(
-                      'Start daily survey',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                  ),
-                ))
+                child: DailySurveyButton(user, now))
           ],
         ));
   }
-}
-
-void startDailySurvey(BuildContext context, UserAccount userAccount) {
-  List<SurveyQuestion> questions = dailySurveyQuestions;
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-        builder: (context) => SurveyView(
-              questions,
-              (answers) {
-                SurveySession session = SurveySession(DateTime.now(), answers);
-
-                userAccount.completedSurveys.add(session);
-
-                if (!userAccount.dontSave) {
-                  log('Saving account...');
-                  SharedPreferences.getInstance()
-                      .then((prefs) => saveAccount(userAccount, prefs)
-                          .then((value) => log('Saved account.')))
-                      .catchError((e) => log(
-                          'Error saving account: ${e.toString()}',
-                          error: e));
-                }
-
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => MainMenuView(userAccount)),
-                  (r) => false, // Clear everything
-                );
-              },
-            )),
-  );
 }
 
 String generateTip(UserAccount account, Emissions last30dayEmissions) {

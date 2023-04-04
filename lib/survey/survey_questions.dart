@@ -93,7 +93,8 @@ final householdTypeQuestion = SurveyQuestion(
 const householdInhabitantCountQuestion = SurveyQuestion(
     "How many people live in your household?",
     'householdInhabitantCount',
-    newIntegerAnswerWidget);
+    newIntegerAnswerWidget,
+    parameters: {'min': 1});
 
 final carTypeQuestion = SurveyQuestion(
     "What type of car do you drive?", 'carType', newMultipleChoiceAnswerWidget,

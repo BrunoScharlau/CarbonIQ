@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_widgets.dart';
-import 'package:gretapp/epicos/color_provider.dart';
+import 'package:gretapp/colors/color_provider.dart';
 
 class SurveyView extends StatefulWidget {
   final List<SurveyQuestion> questions;
@@ -50,7 +50,7 @@ class _SurveyViewState extends State<SurveyView> {
           ),
           backgroundColor: colorProvider.getColor(ColorType.background),
           body: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
             child: ListView(
               children: [
                 Text("Question ${questionIndex + 1}/${widget.questions.length}",

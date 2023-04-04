@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:gretapp/epicos/color_provider.dart';
+import 'package:gretapp/colors/color_provider.dart';
 
 /// A stateful button that enables and disables itself according to the specified ValueNotifier.
 class EnableableButton extends StatefulWidget {
@@ -84,7 +84,13 @@ class TextAnswerInputWidget extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return TextField(controller: editingController, autofocus: true);
+    return TextField(
+      controller: editingController,
+      autofocus: true,
+      style: const TextStyle(color: Colors.white),
+      cursorColor: Colors.white,
+      decoration: const InputDecoration(border: InputBorder.none),
+    );
   }
 }
 
@@ -95,9 +101,14 @@ class IntegerAnswerInputWidget extends StatelessWidget
   final ValueNotifier<bool> hasInput = ValueNotifier<bool>(false);
   final TextEditingController editingController = TextEditingController();
 
-  IntegerAnswerInputWidget({super.key}) {
+  final int? minimum;
+
+  IntegerAnswerInputWidget({super.key, this.minimum}) {
     editingController.addListener(() {
-      hasInput.value = editingController.value.text.isNotEmpty;
+      int? intValue = int.tryParse(editingController.value.text);
+      hasInput.value = editingController.value.text.isNotEmpty &&
+          intValue != null &&
+          (minimum == null || intValue >= minimum!);
     });
   }
 
@@ -121,6 +132,9 @@ class IntegerAnswerInputWidget extends StatelessWidget
     return TextField(
         controller: editingController,
         autofocus: true,
+        style: const TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
+        decoration: const InputDecoration(border: InputBorder.none),
         keyboardType: const TextInputType.numberWithOptions(
             decimal: false, signed: false),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly]);
@@ -162,6 +176,9 @@ class DoubleAnswerInputWidget extends StatelessWidget
     return TextField(
         controller: editingController,
         autofocus: true,
+        style: const TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
+        decoration: const InputDecoration(border: InputBorder.none),
         keyboardType:
             const TextInputType.numberWithOptions(decimal: true, signed: false),
         inputFormatters: [
@@ -224,7 +241,10 @@ class _MultipleChoiceAnswerInputWidgetState
           return Column(
               children: widget.options
                   .map((entry) => RadioListTile<MultipleChoiceOption>(
-                      title: Text(entry.text),
+                      title: Text(
+                        entry.text,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                       value: entry,
                       groupValue: widget.selectedOption.value,
                       onChanged: (value) {
@@ -241,7 +261,9 @@ TextAnswerInputWidget newTextAnswerWidget(Map<String, dynamic>? parameters) =>
     TextAnswerInputWidget();
 IntegerAnswerInputWidget newIntegerAnswerWidget(
         Map<String, dynamic>? parameters) =>
-    IntegerAnswerInputWidget();
+    IntegerAnswerInputWidget(
+      minimum: parameters == null ? null : parameters['min'],
+    );
 DoubleAnswerInputWidget newDoubleAnswerWidget(
         Map<String, dynamic>? parameters) =>
     DoubleAnswerInputWidget();
