@@ -187,24 +187,24 @@ Emissions calculateDietEmissions(Diet diet) {
           .floor());
 }
 
-/// Used to fill in missing days by copying the last given day. If a record for that day is present, it will be returned.
+/// Used to fill in missing days by copying the nearest known record. If a record for that day is present, it will be returned.
 DailyRecord getOrGenerateDailyRecord(UserRecord record, int day) {
-  DailyRecord? lastKnownRecord;
+  DailyRecord? closestKnownRecord;
   for (DailyRecord dailyRecord in record.dailyRecords) {
     if (dailyRecord.dayNumber == day) {
       return dailyRecord;
-    } else if (dailyRecord.dayNumber < day &&
-        (lastKnownRecord == null ||
-            dailyRecord.dayNumber > lastKnownRecord.dayNumber)) {
-      lastKnownRecord = dailyRecord;
+    } else if (closestKnownRecord == null ||
+        (closestKnownRecord.dayNumber - day).abs() >
+            (dailyRecord.dayNumber - day).abs()) {
+      closestKnownRecord = dailyRecord;
     }
   }
 
-  if (lastKnownRecord == null) {
+  if (closestKnownRecord == null) {
     return DailyRecord(day, 0, CommuteMethod.walk, Diet(0, 0, 0, 0, 0));
   } else {
-    return DailyRecord(day, lastKnownRecord.commuteDistance,
-        lastKnownRecord.commuteMethod, lastKnownRecord.diet);
+    return DailyRecord(day, closestKnownRecord.commuteDistance,
+        closestKnownRecord.commuteMethod, closestKnownRecord.diet);
   }
 }
 
@@ -289,8 +289,8 @@ List<Comparison> generateComparisons(
     Comparison("Trees required to offset your emissions",
         (yearlyEmissions ~/ 22000).toString(), '🌳', Colors.green),
     Comparison(
-        "Volume of CO2 emitted",
-        "${(calcualteCO2Volume(periodEmissions.total) / 1000).floor()}K gallons",
+        "Gallons of CO2 emitted",
+        "${(calcualteCO2Volume(periodEmissions.total) / 1000).floor()}K",
         "📦",
         Colors.orange),
     Comparison(

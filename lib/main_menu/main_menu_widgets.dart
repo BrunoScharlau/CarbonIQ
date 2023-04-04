@@ -77,6 +77,7 @@ class ComparisonLister extends StatelessWidget {
                           ]),
                         ),
                       ),
+                      const SizedBox(height: 10), // padding
                       Text(
                         comparison.name,
                         textAlign: TextAlign.center,
@@ -94,7 +95,8 @@ class EmissionsGraph extends StatelessWidget {
   final int dayNumber;
   final Emissions last30dayEmissions;
 
-  const EmissionsGraph(this.record, this.dayNumber, this.last30dayEmissions, {super.key});
+  const EmissionsGraph(this.record, this.dayNumber, this.last30dayEmissions,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -102,23 +104,23 @@ class EmissionsGraph extends StatelessWidget {
       return DataBox(
           "How your emissions evolved during this period",
           const Center(
-              child: Text("No data. Take your first daily survey to see a graph of your emissions!")),
+              child: Text(
+                  "No data. Take your first daily survey to see a graph of your emissions!")),
           ColorProvider(0));
     }
 
     return DataBox(
-      "How your emissions evolved during this period",
-      Column(children: [
-        ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 150),
-            child: LineChart(
-                generateChartData(record, dayNumber))),
-        Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-                "In total, you've emitted ${(last30dayEmissions / 1000).toString()} KG of CO2 in the last 30 days")),
-      ]),
-      ColorProvider(0));
+        "How your emissions evolved during this period",
+        Column(children: [
+          ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 150),
+              child: LineChart(generateChartData(record, dayNumber))),
+          Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                  "In total, you've emitted ${(last30dayEmissions / 1000).toString()} KG of CO2 in the last 30 days")),
+        ]),
+        ColorProvider(0));
   }
 }
 
@@ -134,17 +136,17 @@ class EmissionsPieChart extends StatelessWidget {
       return DataBox(
           "What makes up most of your carbon footprint",
           const Center(
-              child: Text("No data. Take your first daily survey to see a pie chart of your emissions!")),
+              child: Text(
+                  "No data. Take your first daily survey to see a pie chart of your emissions!")),
           ColorProvider(1));
     }
 
     return DataBox(
-      "What makes up most of your carbon footprint",
-      ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 300),
-          child: PieChart(
-              generatePieChartData(last30dayEmissions))),
-      ColorProvider(1));
+        "What makes up most of your carbon footprint",
+        ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 300),
+            child: PieChart(generatePieChartData(last30dayEmissions))),
+        ColorProvider(1));
   }
 }
 
@@ -160,17 +162,18 @@ class EmissionsComparisons extends StatelessWidget {
       return DataBox(
           "What your impact compares to",
           const Center(
-              child: Text("No data. Take your first daily survey to see a list of comparisons!")),
+              child: Text(
+                  "No data. Take your first daily survey to see a list of comparisons!")),
           ColorProvider(2));
     }
 
     return DataBox(
-      "What your impact compares to",
-      ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 500),
-          child: ComparisonLister(
-              generateComparisons(last30dayEmissions, 30))),
-      ColorProvider(2));
+        "What your impact compares to",
+        ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 500),
+            child:
+                ComparisonLister(generateComparisons(last30dayEmissions, 30))),
+        ColorProvider(2));
   }
 }
 

@@ -7,10 +7,8 @@ import 'package:gretapp/data/user.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'package:gretapp/data/datetime.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'main_menu_widgets.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:gretapp/epicos/color_provider.dart';
 
 class MainMenuView extends StatelessWidget {
@@ -27,7 +25,7 @@ class MainMenuView extends StatelessWidget {
     final UserRecord record = generateUserRecord(user);
     final int dayNumber = getDayNumber(now);
     final Emissions last30dayEmissions =
-        calculate30DayEmissions(record, dayNumber); // Divide by 1000 to get kg
+        calculate30DayEmissions(record, dayNumber);
 
     return Scaffold(
         appBar: AppBar(
@@ -47,9 +45,9 @@ class MainMenuView extends StatelessWidget {
             ShaderMask(
                 shaderCallback: (rect) {
                   return LinearGradient(
-                    begin: Alignment.center.add(Alignment(0, .6)),
-                    end: Alignment.bottomCenter.add(Alignment(0, -.25)),
-                    colors: [Colors.white, Colors.transparent],
+                    begin: Alignment.center.add(const Alignment(0, .6)),
+                    end: Alignment.bottomCenter.add(const Alignment(0, -.25)),
+                    colors: const [Colors.white, Colors.transparent],
                   ).createShader(Rect.fromLTRB(0, 0, rect.width, rect.height));
                 },
                 blendMode: BlendMode.dstIn,
@@ -88,7 +86,7 @@ class MainMenuView extends StatelessWidget {
                 right: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 255, 37, 109),
+                    backgroundColor: const Color.fromARGB(255, 255, 37, 109),
                   ),
                   onPressed: () {
                     startDailySurvey(context, user);
