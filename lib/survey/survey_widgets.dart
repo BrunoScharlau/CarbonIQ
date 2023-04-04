@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:gretapp/epicos/color_provider.dart';
+import 'package:gretapp/colors/color_provider.dart';
 
 /// A stateful button that enables and disables itself according to the specified ValueNotifier.
 class EnableableButton extends StatefulWidget {

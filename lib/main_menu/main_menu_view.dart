@@ -6,7 +6,7 @@ import 'package:gretapp/data/carbon.dart';
 import 'package:gretapp/data/user.dart';
 import 'package:gretapp/data/datetime.dart';
 import 'main_menu_widgets.dart';
-import 'package:gretapp/epicos/color_provider.dart';
+import 'package:gretapp/colors/color_provider.dart';
 
 class MainMenuView extends StatelessWidget {
   final UserAccount user;

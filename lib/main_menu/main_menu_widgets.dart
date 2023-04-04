@@ -8,7 +8,7 @@ import 'package:gretapp/survey/survey_view.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:gretapp/data/user.dart';
-import 'package:gretapp/epicos/color_provider.dart';
+import 'package:gretapp/colors/color_provider.dart';
 import 'package:gretapp/data/carbon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
