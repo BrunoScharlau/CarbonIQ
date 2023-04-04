@@ -28,7 +28,9 @@ class MainMenuView extends StatelessWidget {
         appBar: AppBar(
           actions: [
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showSettingsDialog(context, user);
+                },
                 icon: const Icon(
                   Icons.settings,
                   color: Colors.grey,

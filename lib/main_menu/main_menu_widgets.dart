@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:gretapp/data/datetime.dart';
 import 'package:gretapp/main_menu/main_menu_view.dart';
+import 'package:gretapp/registration/registration_view.dart';
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/survey/survey_view.dart';
 import 'package:intl/intl.dart';
@@ -402,9 +403,46 @@ void startDailySurvey(BuildContext context, UserAccount userAccount) {
                   context,
                   MaterialPageRoute(
                       builder: (context) => MainMenuView(userAccount)),
-                  (r) => false, // Clear everything
+                  (r) => false, // Clear entire navigator stack
                 );
               },
             )),
+  );
+}
+
+Future<void> showSettingsDialog(
+    BuildContext context, UserAccount account) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false, // user must tap button!
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Settings'),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: const <Widget>[
+              Text('Do you want to retake the registration survey?'),
+              Text('This will allow you to update your account settings.'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Yes'),
+            onPressed: () {
+              Navigator.of(context).pop();
+
+              startRegistrationSurvey(context, existingAccount: account);
+            },
+          ),
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      );
+    },
   );
 }

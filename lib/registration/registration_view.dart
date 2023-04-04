@@ -34,39 +34,7 @@ class RegistrationView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SurveyView(
-                                registrationQuestions,
-                                (answers) {
-                                  final account = UserAccount(
-                                      answers[nameQuestion],
-                                      SurveySession(DateTime.now(), answers),
-                                      []);
-
-                                  if (!account.dontSave) {
-                                    log('Saving new account...');
-                                    SharedPreferences.getInstance()
-                                        .then((prefs) =>
-                                            saveAccount(account, prefs).then(
-                                                (value) =>
-                                                    log('Saved account.')))
-                                        .catchError((e) => log(
-                                            'Error saving account: ${e.toString()}',
-                                            error: e));
-                                  }
-
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            MainMenuView(account)),
-                                    (r) => false, // Clear everything
-                                  );
-                                },
-                              )),
-                    );
+                    startRegistrationSurvey(context);
                   },
                   child: const Text('Begin')),
             ),
@@ -75,4 +43,43 @@ class RegistrationView extends StatelessWidget {
       ),
     );
   }
+}
+
+startRegistrationSurvey(BuildContext context, {UserAccount? existingAccount}) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+        builder: (context) => SurveyView(
+              registrationQuestions,
+              (answers) {
+                final account = existingAccount != null
+                    ? UserAccount(
+                        answers[nameQuestion],
+                        SurveySession(DateTime.now(), answers),
+                        existingAccount.completedSurveys,
+                        dontSave: existingAccount.dontSave,
+                        lastDailySurveyTime:
+                            existingAccount.lastDailySurveyTime)
+                    : UserAccount(answers[nameQuestion],
+                        SurveySession(DateTime.now(), answers), []);
+
+                if (!account.dontSave) {
+                  log('Saving new account...');
+                  SharedPreferences.getInstance()
+                      .then((prefs) => saveAccount(account, prefs)
+                          .then((value) => log('Saved account.')))
+                      .catchError((e) => log(
+                          'Error saving account: ${e.toString()}',
+                          error: e));
+                }
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MainMenuView(account)),
+                  (r) => false, // Clear entire navigator stack
+                );
+              },
+            )),
+  );
 }
