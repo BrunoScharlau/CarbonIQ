@@ -84,7 +84,13 @@ class TextAnswerInputWidget extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return TextField(controller: editingController, autofocus: true);
+    return TextField(
+      controller: editingController,
+      autofocus: true,
+      style: const TextStyle(color: Colors.white),
+      cursorColor: Colors.white,
+      decoration: const InputDecoration(border: InputBorder.none),
+    );
   }
 }
 
@@ -121,6 +127,9 @@ class IntegerAnswerInputWidget extends StatelessWidget
     return TextField(
         controller: editingController,
         autofocus: true,
+        style: const TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
+        decoration: const InputDecoration(border: InputBorder.none),
         keyboardType: const TextInputType.numberWithOptions(
             decimal: false, signed: false),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly]);
@@ -162,6 +171,9 @@ class DoubleAnswerInputWidget extends StatelessWidget
     return TextField(
         controller: editingController,
         autofocus: true,
+        style: const TextStyle(color: Colors.white),
+        cursorColor: Colors.white,
+        decoration: const InputDecoration(border: InputBorder.none),
         keyboardType:
             const TextInputType.numberWithOptions(decimal: true, signed: false),
         inputFormatters: [
@@ -224,7 +236,10 @@ class _MultipleChoiceAnswerInputWidgetState
           return Column(
               children: widget.options
                   .map((entry) => RadioListTile<MultipleChoiceOption>(
-                      title: Text(entry.text),
+                      title: Text(
+                        entry.text,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                       value: entry,
                       groupValue: widget.selectedOption.value,
                       onChanged: (value) {
