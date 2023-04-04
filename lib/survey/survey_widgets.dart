@@ -101,9 +101,14 @@ class IntegerAnswerInputWidget extends StatelessWidget
   final ValueNotifier<bool> hasInput = ValueNotifier<bool>(false);
   final TextEditingController editingController = TextEditingController();
 
-  IntegerAnswerInputWidget({super.key}) {
+  final int? minimum;
+
+  IntegerAnswerInputWidget({super.key, this.minimum}) {
     editingController.addListener(() {
-      hasInput.value = editingController.value.text.isNotEmpty;
+      int? intValue = int.tryParse(editingController.value.text);
+      hasInput.value = editingController.value.text.isNotEmpty &&
+          intValue != null &&
+          (minimum == null || intValue >= minimum!);
     });
   }
 
@@ -256,7 +261,9 @@ TextAnswerInputWidget newTextAnswerWidget(Map<String, dynamic>? parameters) =>
     TextAnswerInputWidget();
 IntegerAnswerInputWidget newIntegerAnswerWidget(
         Map<String, dynamic>? parameters) =>
-    IntegerAnswerInputWidget();
+    IntegerAnswerInputWidget(
+      minimum: parameters == null ? null : parameters['min'],
+    );
 DoubleAnswerInputWidget newDoubleAnswerWidget(
         Map<String, dynamic>? parameters) =>
     DoubleAnswerInputWidget();

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:gretapp/survey/survey_questions.dart';
 import 'package:gretapp/data/datetime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,7 +92,7 @@ UserRecord generateUserRecord(UserAccount user) {
       car,
       Location.values
           .byName(user.signupSurvey.answers[locationQuestion]!.toString()),
-      user.signupSurvey.answers[householdInhabitantCountQuestion]!,
+      math.max(1, user.signupSurvey.answers[householdInhabitantCountQuestion]!),
       HouseholdType.values
           .byName(user.signupSurvey.answers[householdTypeQuestion]!.toString()),
       dailyRecords);
