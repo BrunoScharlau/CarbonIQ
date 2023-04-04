@@ -109,7 +109,7 @@ Diet getLatestDiet(UserAccount user) {
       getLatestAnswer(user.completedSurveys, lambPorkChickenMassQuestion) ?? 0,
       getLatestAnswer(user.completedSurveys, chocolateMassQuestion) ?? 0,
       getLatestAnswer(user.completedSurveys, cheeseMassQuestion) ?? 0,
-      getLatestAnswer(user.completedSurveys, coffeeMassQuestion) ?? 0);
+      getLatestAnswer(user.completedSurveys, coffeeCupsQuestion) ?? 0);
 }
 
 const int kwhEmissions = 390;
@@ -182,9 +182,8 @@ Emissions calculateDietEmissions(Diet diet) {
                   diet.lambPorkChickenMass *
                       14 + // TODO Split this up into more precise components
                   diet.chocolateMass * 34 +
-                  diet.cheeseMass * 24 +
-                  diet.coffeeMass * 29))
-          .floor());
+                  diet.cheeseMass * 24))
+          .floor() + diet.coffeeCups * 500);
 }
 
 /// Used to fill in missing days by copying the nearest known record. If a record for that day is present, it will be returned.

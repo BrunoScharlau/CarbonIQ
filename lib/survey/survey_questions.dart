@@ -9,10 +9,10 @@ class SurveyQuestion<T> {
   final AnswerInputWidget<T> Function(Map<String, dynamic>? parameters)
       widgetGenerator;
   final Map<String, dynamic>? parameters;
-  final Function<bool>(Map<String, dynamic> answers)? shouldSkip;
+  final Function<T>(Map<String, dynamic> answers)? autoAnswer; // If this function returns a non null value, its results will be used as the answer to this question and the user will not be prompted to answer it
 
   const SurveyQuestion(this.prompt, this.identifier, this.widgetGenerator,
-      {this.parameters, this.shouldSkip});
+      {this.parameters, this.autoAnswer});
 
   AnswerInputWidget<T> generateWidget() {
     return widgetGenerator(parameters);
@@ -147,10 +147,10 @@ const cheeseMassQuestion = SurveyQuestion(
     'cheeseMass',
     newDoubleAnswerWidget);
 
-const coffeeMassQuestion = SurveyQuestion(
-    "How many pounds of coffee did you drink today?",
-    'coffeeMass',
-    newDoubleAnswerWidget);
+const coffeeCupsQuestion = SurveyQuestion(
+    "How many cups of coffee did you drink today?",
+    'coffeeCups',
+    newIntegerAnswerWidget);
 
 final List<SurveyQuestion> registrationQuestions = [
   nameQuestion,
@@ -167,5 +167,5 @@ final List<SurveyQuestion> dailySurveyQuestions = [
   lambPorkChickenMassQuestion,
   chocolateMassQuestion,
   cheeseMassQuestion,
-  coffeeMassQuestion
+  coffeeCupsQuestion
 ];

@@ -147,7 +147,7 @@ List<SurveySession> generateFakeSessions(int seed, double multiplier, int count,
           lambPorkChickenMassQuestion: rng.nextDouble() * 0.05 * multiplier,
           chocolateMassQuestion: rng.nextDouble() * 0.025 * multiplier,
           cheeseMassQuestion: rng.nextDouble() * 0.01 * multiplier,
-          coffeeMassQuestion: 0.18 * rng.nextDouble() * multiplier
+          coffeeCupsQuestion: rng.nextInt(3) * multiplier
         }));
   }
   return sessions;
