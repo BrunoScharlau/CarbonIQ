@@ -31,6 +31,8 @@ enum HouseholdType {
   mobileHome
 }
 
+enum DietType { vegetarian, vegan, pescatarian, omnivore }
+
 class Diet {
   final double beefMass;
   final double lambPorkChickenMass;
@@ -40,8 +42,8 @@ class Diet {
 
   double get totalMeatMass => beefMass + lambPorkChickenMass;
 
-  Diet(this.beefMass, this.lambPorkChickenMass, this.chocolateMass, this.cheeseMass,
-this.coffeeCups);
+  Diet(this.beefMass, this.lambPorkChickenMass, this.chocolateMass,
+      this.cheeseMass, this.coffeeCups);
 }
 
 /// A class containing all relevant data to calculate a person's carbon footprint for a single day

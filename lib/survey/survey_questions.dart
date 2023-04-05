@@ -9,7 +9,8 @@ class SurveyQuestion<T> {
   final AnswerInputWidget<T> Function(Map<String, dynamic>? parameters)
       widgetGenerator;
   final Map<String, dynamic>? parameters;
-  final Function<T>(Map<SurveyQuestion, dynamic> answers)? autoAnswer; // If this function returns a non null value, its results will be used as the answer to this question and the user will not be prompted to answer it
+  final Function(Map<SurveyQuestion, dynamic> previousAnswers)?
+      autoAnswer; // If this function returns a non null value, its results will be used as the answer to this question and the user will not be prompted to answer it
 
   const SurveyQuestion(this.prompt, this.identifier, this.widgetGenerator,
       {this.parameters, this.autoAnswer});
@@ -110,12 +111,13 @@ final carTypeQuestion = SurveyQuestion(
 // Daily survey questions
 
 const commuteDistanceQuestion = SurveyQuestion(
-    "How many miles do you commute to work each day?",
+    "How many miles did you commute today?",
     'commuteDistance',
-    newDoubleAnswerWidget);
+    newDoubleAnswerWidget,
+    parameters: {'default': 0});
 
 final commuteMethodQuestion = SurveyQuestion(
-    "How do you commute to work?", 'commuteType', newMultipleChoiceAnswerWidget,
+    "How do you commute?", 'commuteType', newMultipleChoiceAnswerWidget,
     parameters: {
       'options': [
         MultipleChoiceOption("Car 🚗", CommuteMethod.car.name),
@@ -127,30 +129,60 @@ final commuteMethodQuestion = SurveyQuestion(
       ]
     });
 
+final dietTypeQuestion = SurveyQuestion("What type of food did you eat today?",
+    'dietType', newMultipleChoiceAnswerWidget,
+    parameters: {
+      'options': [
+        MultipleChoiceOption("Vegan 🌱", DietType.vegan.name),
+        MultipleChoiceOption("Vegetarian 🥦", DietType.vegetarian.name),
+        MultipleChoiceOption("Pescatarian 🐟", DietType.pescatarian.name),
+        MultipleChoiceOption("Omnivore 🍖", DietType.omnivore.name)
+      ]
+    });
+
+double? meatAutoAnswer(Map<SurveyQuestion, dynamic> previousAnswers) {
+  if (previousAnswers[dietTypeQuestion] == DietType.vegan.name ||
+      previousAnswers[dietTypeQuestion] == DietType.vegetarian.name ||
+      previousAnswers[dietTypeQuestion] == DietType.pescatarian.name) {
+    return 0.0;
+  } else {
+    return null;
+  }
+}
+
 const beefMassQuestion = SurveyQuestion(
     "How many pounds of beef did you eat today?",
     'beefMass',
-    newDoubleAnswerWidget);
+    newDoubleAnswerWidget,
+    autoAnswer: meatAutoAnswer,
+    parameters: {'default': 0});
 
 const lambPorkChickenMassQuestion = SurveyQuestion(
     "How many pounds of lamb, pork, and chicken did you eat today?",
     'lambPorkChickenMass',
-    newDoubleAnswerWidget);
+    newDoubleAnswerWidget,
+    autoAnswer: meatAutoAnswer,
+    parameters: {'default': 0});
 
 const chocolateMassQuestion = SurveyQuestion(
     "How many pounds of chocolate did you eat today?",
     'chocolateMass',
-    newDoubleAnswerWidget);
+    newDoubleAnswerWidget,
+    parameters: {'default': 0});
 
-const cheeseMassQuestion = SurveyQuestion(
+final cheeseMassQuestion = SurveyQuestion(
     "How many pounds of cheese did you eat today?",
     'cheeseMass',
-    newDoubleAnswerWidget);
+    newDoubleAnswerWidget,
+    autoAnswer: ((previousAnswers) =>
+        previousAnswers[dietTypeQuestion] == DietType.vegan.name ? 0.0 : null),
+    parameters: {'default': 0});
 
 const coffeeCupsQuestion = SurveyQuestion(
     "How many cups of coffee did you drink today?",
     'coffeeCups',
-    newIntegerAnswerWidget);
+    newIntegerAnswerWidget,
+    parameters: {'default': 0});
 
 final List<SurveyQuestion> registrationQuestions = [
   nameQuestion,
@@ -163,9 +195,10 @@ final List<SurveyQuestion> registrationQuestions = [
 final List<SurveyQuestion> dailySurveyQuestions = [
   commuteDistanceQuestion,
   commuteMethodQuestion,
+  dietTypeQuestion,
   beefMassQuestion,
   lambPorkChickenMassQuestion,
-  chocolateMassQuestion,
   cheeseMassQuestion,
-  coffeeCupsQuestion
+  coffeeCupsQuestion,
+  chocolateMassQuestion
 ];
