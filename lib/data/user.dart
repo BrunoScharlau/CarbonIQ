@@ -31,17 +31,19 @@ enum HouseholdType {
   mobileHome
 }
 
+enum DietType { vegetarian, vegan, pescatarian, omnivore }
+
 class Diet {
   final double beefMass;
   final double lambPorkChickenMass;
   final double chocolateMass;
   final double cheeseMass;
-  final double coffeeMass;
+  final int coffeeCups;
 
   double get totalMeatMass => beefMass + lambPorkChickenMass;
 
   Diet(this.beefMass, this.lambPorkChickenMass, this.chocolateMass,
-      this.cheeseMass, this.coffeeMass);
+      this.cheeseMass, this.coffeeCups);
 }
 
 /// A class containing all relevant data to calculate a person's carbon footprint for a single day
@@ -85,7 +87,7 @@ UserRecord generateUserRecord(UserAccount user) {
             survey.answers[lambPorkChickenMassQuestion] ?? 0,
             survey.answers[chocolateMassQuestion] ?? 0,
             survey.answers[cheeseMassQuestion] ?? 0,
-            survey.answers[coffeeMassQuestion] ?? 0)));
+            survey.answers[coffeeCupsQuestion] ?? 0)));
   }
 
   return UserRecord(

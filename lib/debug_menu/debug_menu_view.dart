@@ -143,11 +143,12 @@ List<SurveySession> generateFakeSessions(int seed, double multiplier, int count,
           commuteDistanceQuestion: rng.nextDouble() * 5 * multiplier,
           commuteMethodQuestion:
               commuteMethods[rng.nextInt(commuteMethods.length)],
+          dietTypeQuestion: DietType.omnivore.name,
           beefMassQuestion: rng.nextDouble() * 0.01 * multiplier,
           lambPorkChickenMassQuestion: rng.nextDouble() * 0.05 * multiplier,
           chocolateMassQuestion: rng.nextDouble() * 0.025 * multiplier,
           cheeseMassQuestion: rng.nextDouble() * 0.01 * multiplier,
-          coffeeMassQuestion: 0.18 * rng.nextDouble() * multiplier
+          coffeeCupsQuestion: (rng.nextInt(3) * multiplier).floor()
         }));
   }
   return sessions;

@@ -101,15 +101,18 @@ class IntegerAnswerInputWidget extends StatelessWidget
   final ValueNotifier<bool> hasInput = ValueNotifier<bool>(false);
   final TextEditingController editingController = TextEditingController();
 
+  final int? defaultValue;
   final int? minimum;
 
-  IntegerAnswerInputWidget({super.key, this.minimum}) {
+  IntegerAnswerInputWidget({super.key, this.defaultValue, this.minimum}) {
     editingController.addListener(() {
       int? intValue = int.tryParse(editingController.value.text);
       hasInput.value = editingController.value.text.isNotEmpty &&
           intValue != null &&
           (minimum == null || intValue >= minimum!);
     });
+
+    if (defaultValue != null) editingController.text = defaultValue.toString();
   }
 
   destructor() {
@@ -147,13 +150,15 @@ class DoubleAnswerInputWidget extends StatelessWidget
   @override
   final ValueNotifier<bool> hasInput = ValueNotifier<bool>(false);
   final TextEditingController editingController = TextEditingController();
+  final double? defaultValue;
 
-  DoubleAnswerInputWidget({super.key}) {
+  DoubleAnswerInputWidget({super.key, this.defaultValue}) {
     editingController.addListener(() {
       hasInput.value = editingController.value.text.isNotEmpty &&
           editingController.value.text != "." &&
           '.'.allMatches(editingController.value.text).length <= 1;
     });
+    if (defaultValue != null) editingController.text = defaultValue.toString();
   }
 
   destructor() {
@@ -263,10 +268,11 @@ IntegerAnswerInputWidget newIntegerAnswerWidget(
         Map<String, dynamic>? parameters) =>
     IntegerAnswerInputWidget(
       minimum: parameters == null ? null : parameters['min'],
+      defaultValue: parameters == null ? null : parameters['default']?.toInt(),
     );
 DoubleAnswerInputWidget newDoubleAnswerWidget(
         Map<String, dynamic>? parameters) =>
-    DoubleAnswerInputWidget();
+    DoubleAnswerInputWidget(defaultValue: parameters?['default']?.toDouble());
 MultipleChoiceAnswerInputWidget newMultipleChoiceAnswerWidget(
         Map<String, dynamic>? parameters) =>
     MultipleChoiceAnswerInputWidget(parameters == null
