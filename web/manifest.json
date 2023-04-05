@@ -1,0 +1,19 @@
+{
+    "name": "gretapp",
+    "short_name": "gretapp",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "Google solutions challenge submission",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/CarbonIQ_Icon.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        }
+        
+    ]
+}
