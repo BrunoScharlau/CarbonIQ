@@ -15,13 +15,29 @@ class SurveyView extends StatefulWidget {
 }
 
 class _SurveyViewState extends State<SurveyView> {
-  int questionIndex = 0;
+  late int questionIndex;
   late ColorProvider colorProvider;
 
   @override
   void initState() {
+    questionIndex = findNextAnswerNeedingQuestion(0);
     colorProvider = ColorProvider.random();
     super.initState();
+  }
+
+  int findNextAnswerNeedingQuestion(int startIndex) {
+    for (int i = startIndex; i < widget.questions.length; i++) {
+      if (widget.questions[i].autoAnswer == null) return i;
+      
+      dynamic answer = widget.questions[i].autoAnswer!(widget.answers);
+      if (answer != null) {
+        widget.answers[widget.questions[i]] = answer;
+      } else {
+        return i;
+      }
+    }
+
+    return widget.questions.length;
   }
 
   @override
@@ -71,7 +87,7 @@ class _SurveyViewState extends State<SurveyView> {
                       answerInputWidget.getInput();
                   if (questionIndex < widget.questions.length - 1) {
                     setState(() {
-                      questionIndex++;
+                      questionIndex = findNextAnswerNeedingQuestion(questionIndex + 1);
                       colorProvider.changePaletteWithOffset(1);
                     });
                   } else {

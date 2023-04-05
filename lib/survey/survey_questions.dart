@@ -9,7 +9,7 @@ class SurveyQuestion<T> {
   final AnswerInputWidget<T> Function(Map<String, dynamic>? parameters)
       widgetGenerator;
   final Map<String, dynamic>? parameters;
-  final Function<T>(Map<String, dynamic> answers)? autoAnswer; // If this function returns a non null value, its results will be used as the answer to this question and the user will not be prompted to answer it
+  final Function<T>(Map<SurveyQuestion, dynamic> answers)? autoAnswer; // If this function returns a non null value, its results will be used as the answer to this question and the user will not be prompted to answer it
 
   const SurveyQuestion(this.prompt, this.identifier, this.widgetGenerator,
       {this.parameters, this.autoAnswer});
