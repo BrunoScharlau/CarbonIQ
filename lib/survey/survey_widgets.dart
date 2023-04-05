@@ -268,11 +268,11 @@ IntegerAnswerInputWidget newIntegerAnswerWidget(
         Map<String, dynamic>? parameters) =>
     IntegerAnswerInputWidget(
       minimum: parameters == null ? null : parameters['min'],
-      defaultValue: parameters == null ? null : parameters['default'],
+      defaultValue: parameters == null ? null : parameters['default']?.toInt(),
     );
 DoubleAnswerInputWidget newDoubleAnswerWidget(
         Map<String, dynamic>? parameters) =>
-    DoubleAnswerInputWidget(defaultValue: parameters?['default']);
+    DoubleAnswerInputWidget(defaultValue: parameters?['default']?.toDouble());
 MultipleChoiceAnswerInputWidget newMultipleChoiceAnswerWidget(
         Map<String, dynamic>? parameters) =>
     MultipleChoiceAnswerInputWidget(parameters == null
