@@ -23,9 +23,9 @@ The easiest way is to run the app as a web app. However, while running on the we
 To build the app for the web, ensure that you have flutter installed, open a terminal in the directory this repository was cloned into and run
 ```bash
 flutter build web
-flutter run
+flutter run -d chrome
 ```
-And select the browser you want to run the app in. We recommend that you adjust the aspect ratio of your browser window to match that of a mobile device in portrait mode.
+This requires Google Chrome to be installed. Alternatively, replace `chrome` with the name of another Flutter-supported installed browser.
 
 The app was developed for Android, so it is recommended to run it on an Android device. To build the app for Android, ensure that you have flutter installed and run
 ```bash
@@ -41,6 +41,8 @@ flutter emulators --launch <emulator_id>
 flutter run
 ```
 And select the Android device you want to run the app in.
+
+**Important**: To make testing and demoing easier, the app will first display a Demo Menu. Press the first button from the top to run the App normally, or select another mode for testing. (Note: the demo users are randomly generated and do not reflect the behavior of any real-world person).
 
 ## Data sources
 The data used to calculate carbon emissions is taken from the following sources:
